@@ -6,19 +6,90 @@ var maxAtributos = 99;
 var minNivelBase = 1;
 var maxNivelBase = 99;
 var maxNivelClasse = 50;
+let ataquePorRefino = {
+  "1": 2,
+  "2": 3,
+  "3": 5,
+  "4": 7
+}
+let overPorRefino = {
+  "1": 2,
+  "2": 5,
+  "3": 8,
+  "4": 14
+}
+let todosItensSelecionados = {
+  "itemTopo": {},
+  "itemMeio": {},
+  "itemBaixo": {},
+  "itemArmadura": {},
+  "itemMaoDireita": {},
+  "itemMaoEsquerda": {},
+  "itemCapa": {},
+  "itemSapatos": {},
+  "itemAcessorioD": {},
+  "itemAcessorioE": {}
+};
+
+
+function getItemRefino(slot) {
+  return (document.querySelector("#" + slot + " select.refino") ? (parseInt(document.querySelector("#" + slot + " select.refino").value)) : 0);
+}
+
+function getAtributoBase(atributo) {
+  return parseInt(document.querySelector("#" + atributo).value);
+}
+
+function getNivelBase() {
+  return parseInt(document.querySelector("#nivelPersonagem").value);
+}
+
+function getNivelClasse() {
+  return parseInt(document.querySelector("#nivelClasse").value);
+}
+
+function isClasse(lista) {
+  return lista.includes(classeAtual.classeID);
+}
+
+function isTipoArma(slot, lista) {
+  return lista.includes((filterItemById($(".itemSlot#" + slot + " select.equipamento").val())).itemSubtipo);
+}
+
+function hasCombo(slotOriginal, itemOriginal, opcoesItens) {
+  let temTodosItens = true;
+  opcoesItens.forEach(function(itemCombo, index) {
+    let elementosComCombo = $(`select.equipamento, .carta select, #municoes select`).filter(function(item, index) { return itemCombo.includes(($(this).val()).replace(/\D+/g, '')) }).length;
+    if(elementosComCombo <= 0) temTodosItens = false;
+  });
+  let primeiroElementoItemOriginal = $(`select.equipamento, .carta select, #municoes select`).filter(function(item, index) { return $(this).val() == itemOriginal }).eq(0).closest(".itemSlot").attr("id");
+  return (temTodosItens && slotOriginal == primeiroElementoItemOriginal);
+}
+
+function isOpponent(tipo, ids) {
+  let quantidadeAlvos = $(`#${tipo}`).filter(function(item, index) { return ids.includes($(this).val()) }).length;
+  return quantidadeAlvos > 0;
+}
+
+function isOpponentChefe() {
+  return $("#chefe").prop("checked");
+}
 
 
 function getClasse(varClasseAtual) {
-  return classes.filter(obj => { return obj.classeID === varClasseAtual })[0];
+  return classes.find(obj => { return obj.classeID === varClasseAtual });
 }
 
 function setClasse(varClasseAtual) {
   classeAtual = getClasse(varClasseAtual);
+  if(classeAtual.transclasse) {
+    $("#adotado").prop("checked",false);
+  }
 }
 
 function setBuildAtual() {
   let tempBuildAtual = $("#buildPersonagem").val().replace(classeAtual.classeID + "--", "");
-  buildAtual = classeAtual.classeBuilds.filter(obj => { return obj.id === tempBuildAtual })[0];
+  buildAtual = classeAtual.classeBuilds.find(obj => { return obj.id === tempBuildAtual });
 }
 
 function getClasseTipo() {
@@ -76,19 +147,27 @@ function readClassAndBuild() {
   buildPersonagem = $("#buildPersonagem").val();
 }
 
-function filterItemById() {
+function filterItemById(id) {
   // filtra os itens usando o ID
-  return items.filter(obj => { return obj.itemId === "5360" })
+  return items.find(obj => { return obj.itemId == id })
 }
 
-function filterItemByBuild(slot) {
-  // filtra os itens usando o tipo, classe e build
-  if(buildRequisitos[buildPersonagem] !== undefined) {
-    return items.filter(obj => {
+function filterCartaById(id) {
+  // filtra os itens usando o ID
+  return cartas.find(obj => { return obj.cartaID == id })
+}
+
+function filterAmmoById(id) {
+  // filtra os itens usando o ID
+  return municoes.find(obj => { return obj.municaoId == id })
+}
+
+function filterCartaByBuild(slot) {
+  // filtra as cartas usando o tipo e build
+  if(buildAtual.requisitos !== undefined) {
+    return cartas.filter(obj => {
       return (
-        obj.itemTipo === slot
-        &&
-        (obj.itemClasses.includes(classePersonagem) || obj.itemClasses.includes("todas"))
+        (obj.cartaSlot === slot || obj.cartaSlot === "essencia")
         &&
         obj.itemBonus.some(r=> buildAtual.requisitos.includes(r))
       )
@@ -98,9 +177,59 @@ function filterItemByBuild(slot) {
   }
 }
 
+function filterEncantamentoByItem(listaEncantamentos) {
+  // filtra as cartas usando o tipo e build
+  if(buildAtual.requisitos !== undefined) {
+    return cartas.filter(obj => {
+      return (
+        obj.cartaSlot === "encantamento"
+        &&
+        listaEncantamentos.includes(obj.cartaID)
+      )
+    });
+  } else {
+    return [];
+  }
+}
+
+function filterItemByBuild(slot) {
+  // filtra os itens usando o tipo, classe e build
+  if(buildAtual.requisitos !== undefined) {
+    return items.filter(obj => {
+      return (
+        obj.itemTipo === slot
+        &&
+        (obj.itemClasses.includes(classePersonagem) || obj.itemClasses.includes("todas") || (classeAtual.transclasse && obj.itemClasses.includes("transclasse")))
+        &&
+        obj.itemBonus.some(r=> buildAtual.requisitos.includes(r))
+      )
+    });
+  } else {
+    return [];
+  }
+}
+
+function filterAmmoByWeaponType(tipo) {
+  // filtra os itens usando o tipo, classe e build
+  if(buildAtual.requisitos !== undefined) {
+    let municoesSelecionadas = municoes.filter(obj => {
+      return (
+        obj.municaoTipo === tipo
+        &&
+        parseInt(obj.municaoNivel) <= getNivelBase()
+        &&
+        obj.municaoBonus.some(r=> buildAtual.requisitos.includes(r))
+      )
+    });
+    return municoesSelecionadas;
+  } else {
+    return [];
+  }
+}
+
 function filterArma(slot, mao) {
   // filtra os itens usando o tipo, classe e build
-  if(buildRequisitos[buildPersonagem] !== undefined) {
+  if(buildAtual.requisitos !== undefined) {
     return items.filter(obj => {
       return (
         obj.itemTipo === slot
@@ -191,6 +320,59 @@ function exibirBuilds() {
     $("#buildPersonagem").append("<option value='" + classePersonagem + "--" + (item.id) + "'>" + (item.nome) + "</option>");
   });
   readClassAndBuild();
+}
+
+function exibirCartas(posicao) {
+  let slotCarta = posicao;
+  $("#" + posicao + " div.carta select").val("");
+  $("#" + posicao + " div.carta").slice(1).remove();
+  $("#" + posicao + " div.carta").html("");
+  if(posicao == "itemTopo" || posicao == "itemMeio") slotCarta = "itemCabeca";
+  if(posicao == "itemMaoDireita") slotCarta = "itemArma";
+  if(posicao == "itemAcessorioD" || posicao == "itemAcessorioE") slotCarta = "itemAcessorio";
+  let slots = 0;
+  if(posicao != "") {
+    let itemSelecionado = $("#" + posicao + " select.equipamento").val();
+    if(itemSelecionado) {
+      let item = filterItemById(itemSelecionado);
+      let slots = item.slots;
+      let encantamentosItem = (item.encantamentos) ? item.encantamentos : [];
+      let qtdEncantamentos = (encantamentosItem.length > 0) ? encantamentosItem.length : 0;
+
+      let htmlcode = `<div class="row carta">`;
+      if(slots > 0) {
+        let listaCartas = filterCartaByBuild(slotCarta);
+        for(let i = 1; i <= slots; i++) {
+          if(i % 2 == 1 && i != 1) {
+            htmlcode += `</div><div class="row carta">`;
+          }
+          let tamanhoDiv = ((slots + qtdEncantamentos) % 2 == 1 && i == slots + qtdEncantamentos) ? "col-12" : "col-6";
+          htmlcode += `<div class="${tamanhoDiv} carta-${i}"><select><option value="">Carta</option>`;
+          listaCartas.forEach(function(carta, index) {
+            htmlcode += `<option value="${carta.cartaID}">${carta.cartaNome}</option>`;
+          });
+          htmlcode += `</select></div>`;
+        }
+      }
+      if(qtdEncantamentos > 0) {
+        for (const [index, listaEncantamentos] of encantamentosItem.entries()) {
+          if((slots + index + 1) % 2 == 1 && (index + 1 + slots) != 1) {
+            htmlcode += `</div><div class="row carta">`;
+          }
+          let encantamentos = filterEncantamentoByItem(listaEncantamentos);
+          let tamanhoDiv = ((slots + qtdEncantamentos) % 2 == 1 && (slots + index + 1 == slots + qtdEncantamentos)) ? "col-12" : "col-6";
+          htmlcode += `<div class="${tamanhoDiv} carta-${slots + index}"><select><option value="">Encantamento</option>`;
+          encantamentos.forEach(function(carta, index) {
+            htmlcode += `<option value="${carta.cartaID}">${carta.cartaNome}</option>`;
+          });
+          htmlcode += `</select></div>`;
+        }
+      }
+      htmlcode += `</div>`;
+      $("#" + posicao + " div.carta").replaceWith(htmlcode);
+    }
+  }
+  $("#" + posicao + " div.carta select").on("change", onChangeInputs);
 }
 
 function exibirItens() {
@@ -285,8 +467,191 @@ function exibirItens() {
 
 }
 
+function getItemBonusName(bonusId) {
+  return bonusId in itemBonuses ? itemBonuses[bonusId].nome : "Bônus não encontrado";
+}
+function isItemBonusPercentage(bonusId) {
+  return bonusId in itemBonuses ? itemBonuses[bonusId].porcentagem : false;
+}
+
 function definirBonusItens() {
-  
+
+  // Lendo bônus dos itens equipados
+  $("select.equipamento").each(function() {
+    let itemId = $(this).val();
+    let slot = $(this).closest(".itemSlot").attr("id");
+    $(`#${slot} .cool-box--header img`).remove();
+
+    if(itemId != "") {
+      $(`#${slot} .cool-box--header`).append(`<img src="https://www.divine-pride.net/img/items/item/bRO/${(itemId).replace(/\D+/g, '')}">`);
+
+      let item = filterItemById(itemId);
+      if(slot == "itemMaoDireita") {
+        let idMunicao = $("#municoes select").val();
+        todosItensSelecionados[slot]["atqarma"] = item.itemArmaATQ + (ataquePorRefino[String(item.itemArmaNivel)] * getItemRefino("itemMaoDireita"));
+        if(idMunicao) {
+          let municaoSelecionada = filterAmmoById(idMunicao);
+          let municao = municaoSelecionada.municaoAtaque || 0;
+          todosItensSelecionados[slot]["atqmunicao"] = municao;
+          $("select#municao").val(String(municaoSelecionada.municaoPropriedade));
+          $.each(municaoSelecionada.municaoFuncao(), function(index, value) {
+            todosItensSelecionados[slot][index] = (todosItensSelecionados[slot][index] ? todosItensSelecionados[slot][index] : 0) + value;
+          });
+        } else {
+          $("select#municao").val("0");
+        }
+      }
+
+      // Contabilizando bônus dos itens
+      let bonusItem = item.itemFuncao(slot, itemId);
+      $.each(bonusItem, function(index, value) {
+        todosItensSelecionados[slot][index] = (todosItensSelecionados[slot][index] ? todosItensSelecionados[slot][index] : 0) + value;
+      });
+
+    }
+  });
+
+  // Lendo bônus das cartas equipadas
+  $(".carta select").each(function() {
+    let cartaId = $(this).val();
+    let slot = $(this).closest(".itemSlot").attr("id");
+    if(cartaId != "") {
+      let carta = filterCartaById(cartaId);
+
+      // Contabilizando bônus dos itens
+      let bonusCarta = carta.itemFuncao(slot, cartaId);
+      $.each(bonusCarta, function(index, value) {
+        todosItensSelecionados[slot][index] = (todosItensSelecionados[slot][index] ? todosItensSelecionados[slot][index] : 0) + value;
+      });
+    }
+  });
+
+  // Exibindo itens na tela
+  $.each(todosItensSelecionados, function(indexTodosItens, valueTodosItens) {
+    let elemento = $("#" + indexTodosItens + " .itemBonus");
+    elemento.html("");
+    if(Object.keys(valueTodosItens).length > 0) {
+      $.each(valueTodosItens, function(indexBonus, valueBonus) {
+        if(valueBonus) {
+          if(!(indexBonus.indexOf("--") >= 0 && indexBonus.replace(indexBonus.substr(0,indexBonus.indexOf("--")) + "--","") != buildAtual.id)) {
+            elemento.append(
+              `<div class="col-12"><span>${getItemBonusName(indexBonus)}:</span><span>${valueBonus}${isItemBonusPercentage(indexBonus) ? "%" : ""}</span></div>`
+            )
+          }
+        }
+      });
+    }
+  });
+
+}
+
+function getFormulaSkill(prop, base, classe) {
+  let formula = buildAtual.formula(prop, base, classe);
+  console.log("Formula: " + formula + "%");
+  return formula
+}
+
+function calcular() {
+  console.log("### Calculando ###");
+  let bonusConsolidados = {};
+  $.each(todosItensSelecionados, function(indexTodosItens, valueTodosItens) {
+    $.each(valueTodosItens, function(index, valor) {
+      bonusConsolidados[index] = parseInt((bonusConsolidados[index] ? bonusConsolidados[index] : 0) + valor);
+    });
+  });
+
+  let formulaSkill = getFormulaSkill(bonusConsolidados, getNivelBase(), getNivelClasse());
+
+  bonusConsolidados.atributoforca = (bonusConsolidados.atributoforca ? bonusConsolidados.atributoforca : 0) + getAtributoBase("for");
+  bonusConsolidados.atributoagilidade = (bonusConsolidados.atributoagilidade ? bonusConsolidados.atributoagilidade : 0) + getAtributoBase("agi");
+  bonusConsolidados.atributovitalidade = (bonusConsolidados.atributovitalidade ? bonusConsolidados.atributovitalidade : 0) + getAtributoBase("vit");
+  bonusConsolidados.atributointeligencia = (bonusConsolidados.atributointeligencia ? bonusConsolidados.atributointeligencia : 0) + getAtributoBase("int");
+  bonusConsolidados.atributodestreza = (bonusConsolidados.atributodestreza ? bonusConsolidados.atributodestreza : 0) + getAtributoBase("des");
+  bonusConsolidados.atributosorte = (bonusConsolidados.atributosorte ? bonusConsolidados.atributosorte : 0) + getAtributoBase("sor");
+
+  let itemArmaAtual = filterItemById($("#itemMaoDireita select.equipamento").val());
+  let refinoArmaAtual = getItemRefino("itemMaoDireita");
+  let statusAtq = 0;
+  let statBonus = 0;
+  let overRefino = 0;
+  let highRefino = 0;
+  let weaponAtq = 0;
+
+  let itemArmaATQ =  0;
+  let itemArmaNivel =  0;
+  let variance = 0;
+  let danoTamanho = 1;
+
+  if(itemArmaAtual != undefined) {
+    let tipoArma = tiposArmas.find(obj => { return obj.armaId === itemArmaAtual.itemSubtipo });
+
+    itemArmaATQ = itemArmaAtual.itemArmaATQ;
+    itemArmaNivel = itemArmaAtual.itemArmaNivel;
+
+    variance = parseInt(0.05 * itemArmaNivel * itemArmaATQ);
+    bonusRefino = refinoArmaAtual * ataquePorRefino[itemArmaNivel];
+    overRefino = Math.max(refinoArmaAtual - (8 - itemArmaNivel), 0) * overPorRefino[itemArmaNivel];
+    highRefino = (Math.max(refinoArmaAtual - 16, 0) * (parseInt(itemArmaNivel / 2) + 1)) + (16 * (parseInt(itemArmaNivel / 2) + 1) * Math.max(Math.min(refinoArmaAtual - 15, 1), 0));
+
+    danoTamanho = tipoArma.armaPenalidades[$("#tamanhoMonstro").val()];
+
+    if($("#itemMaoDireita select.equipamento").val() != "" && isTipoArma("itemMaoDireita", ["Arma_Arco","Arma_Instrumento","Arma_Chicote","Arma_Pistola","Arma_Rifle","Arma_Metralhadora","Arma_Espingarda","Arma_Granadas"])) {
+      statusAtq = parseInt(getNivelBase() / 4) + bonusConsolidados.atributodestreza + parseInt(bonusConsolidados.atributoforca / 5) + parseInt(bonusConsolidados.atributosorte / 3);
+      statBonus = parseInt((itemArmaATQ * bonusConsolidados.atributodestreza) / 200);
+    } else {
+      statusAtq = parseInt(getNivelBase() / 4) + bonusConsolidados.atributoforca + parseInt(bonusConsolidados.atributodestreza / 5) + parseInt(bonusConsolidados.atributosorte / 3);
+      statBonus = parseInt((itemArmaATQ * bonusConsolidados.atributoforca) / 200);
+    }
+
+    weaponAtqMin = parseInt((itemArmaATQ - variance + statBonus + bonusRefino + highRefino) * danoTamanho);
+    weaponAtqMax = parseInt((itemArmaATQ + variance + statBonus + bonusRefino + highRefino + overRefino) * danoTamanho);
+
+    extraAtq = (bonusConsolidados.atq || 0) + (bonusConsolidados.atqmunicao || 0);
+    console.log("extraAtq: " + extraAtq);
+  }
+
+  console.log("---------------------------");
+}
+
+function exibirMunicoes() {
+  let idMaoDireita = $("#itemMaoDireita select.equipamento").val();
+  if(idMaoDireita != "") {
+    let itemMaoDireita = filterItemById(idMaoDireita);
+    let tipoItemMaoDireita = itemMaoDireita.itemSubtipo;
+    if(tipoItemMaoDireita == "Arma_Arco" && $("#municoes").length <= 0) {
+      let row = $("#itemMaoDireita select.equipamento").closest(".row");
+      let municoesAtuais = filterAmmoByWeaponType("flecha");
+      let htmlcode = `<div class="col-6" id="municoes"><select><option value="">Munição</option>`;
+      municoesAtuais.forEach(function(municao, index) {
+        htmlcode += `<option value="${municao.municaoId}">${municao.municaoNome}</option>`;
+      });
+      htmlcode += `</select></div>`;
+      row.append(htmlcode);
+      $("#municoes").on("change", onChangeInputs)
+    }
+    if(tipoItemMaoDireita != "Arma_Arco") {
+      $("#municoes").remove();
+    }
+  } else {
+    $("select#municao").val("0");
+    $("#municoes").remove();
+  }
+}
+
+function zerarTodosItensSelecionados() {
+  todosItensSelecionados = {
+    "itemTopo": {},
+    "itemMeio": {},
+    "itemBaixo": {},
+    "itemArmadura": {},
+    "itemMaoDireita": {},
+    "itemMaoEsquerda": {},
+    "itemCapa": {},
+    "itemSapatos": {},
+    "itemAcessorioD": {},
+    "itemAcessorioE": {}
+  }
+  $(".itemSlot .itemBonus").html("");
 }
 
 function initCalc() {
@@ -302,6 +667,17 @@ function initCalc() {
   exibirItens();
 }
 
+function onChangeInputs() {
+  zerarTodosItensSelecionados();
+  if($(this).is("select.equipamento")) {
+    let posicao = $(this).closest(".itemSlot").attr("id");
+    exibirCartas(posicao);
+  }
+  definirBonusItens();
+  exibirMunicoes();
+  calcular();
+}
+
 $(document).ready(function() {
   // documento carregado
   initCalc();
@@ -309,6 +685,7 @@ $(document).ready(function() {
   $("#classePersonagem").on("change", function() {
     readClassAndBuild();
     setClasse(classePersonagem);
+    zerarTodosItensSelecionados();
     setBuildAtual();
     listarNivelBase();
     listarNivelClasse();
@@ -320,12 +697,19 @@ $(document).ready(function() {
   $("#buildPersonagem").on("change", function() {
     readClassAndBuild();
     setBuildAtual();
+    zerarTodosItensSelecionados();
     exibirItens();
+    exibirMunicoes();
   });
 
   $("#adotado").on("change", function() {
     if(classeAtual.transclasse && $(this).is(":checked")) {
-      $("#classePersonagem").val(classeAtual.classeID + "_NT")
+      if($("#classePersonagem option[value=" + classeAtual.classeID + "_NT" + "]").val() != undefined) {
+        $("#classePersonagem").val(classeAtual.classeID + "_NT");
+      } else {
+        $("#adotado").prop("checked",false);
+      }
+      $("#classePersonagem").trigger("change");
     }
     listarAtributosMaximos();
   });
@@ -338,9 +722,7 @@ $(document).ready(function() {
     calcularPontosAtributo();
   });
 
-  $("select.refino, select.equipamento, .carta select").on("change", function() {
-    definirBonusItens();
-  });
+  $("select.refino, select.equipamento, .carta select, .atributoBase, #alvo :input, #municoes select, select#nivelPersonagem, select#nivelClasse").on("change", onChangeInputs);
 });
 
 

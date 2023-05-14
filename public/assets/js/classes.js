@@ -30,23 +30,35 @@ var classes = [
         nome: "Crítico com arco",
         maoDireita: ["Arma_Arco"],
         maoEsquerda: [],
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 140
+        },
         requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef"]
       },
       {
-        "id": "Disparo_Triplo",
-        "nome": "Disparo Triplo"
+        id: "Disparo_Triplo",
+        nome: "Disparo Triplo",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
-        "id": "Rajada_de_Flechas",
-        "nome": "Rajada de Flechas"
+        id: "Rajada_de_Flechas",
+        nome: "Rajada de Flechas",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: [],
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_DCrit","REQ_IgnDef","REQ_Rajada_de_Flechas"]
       },
       {
-        "id": "Impacto_de_Tyr",
-        "nome": "Impacto de Tyr"
+        id: "Impacto_de_Tyr",
+        nome: "Impacto de Tyr",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
-        "id": "Apunhalar",
-        "nome": "Apunhalar"
+        id: "Apunhalar",
+        nome: "Apunhalar",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       }
     ]
   },
@@ -79,24 +91,33 @@ var classes = [
       {
         id: "Arco_Critico",
         nome: "Crítico com arco",
-        armas: ["Arma_Arco"],
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: [],
         requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef"]
       },
       {
-        "id": "Disparo_Triplo",
-        "nome": "Disparo Triplo"
+        id: "Disparo_Triplo",
+        nome: "Disparo Triplo",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
-        "id": "Rajada_de_Flechas",
-        "nome": "Rajada de Flechas"
+        id: "Rajada_de_Flechas",
+        nome: "Rajada de Flechas",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
-        "id": "Impacto_de_Tyr",
-        "nome": "Impacto de Tyr"
+        id: "Impacto_de_Tyr",
+        nome: "Impacto de Tyr",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
-        "id": "Apunhalar",
-        "nome": "Apunhalar"
+        id: "Apunhalar",
+        nome: "Apunhalar",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       }
     ]
   },
@@ -142,23 +163,33 @@ var classes = [
     classeBuilds: [
       {
         id: "Impacto_Meteoro",
-        "nome": "Impacto Meteoro"
+        nome: "Impacto Meteoro",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
         id: "Laminas_de_Loki",
-        nome: "Lâminas de Loki"
+        nome: "Lâminas de Loki",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
         id: "Lamento_de_Loki",
-        nome: "Lamento de Loki"
+        nome: "Lamento de Loki",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
         id: "Katar_Critico",
-        nome: "Crítico com katar"
+        nome: "Crítico com katar",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       },
       {
-        "id": "Dual_Critico",
-        "nome": "Crítico com duas armas"
+        id: "Dual_Critico",
+        nome: "Crítico com duas armas",
+        maoDireita: ["Arma_Arco"],
+        maoEsquerda: []
       }
     ]
   },
@@ -565,6 +596,46 @@ var classes = [
     classeBuilds: []
   },
   {
+    classeID: "Classe_ME",
+    classeNome: "Mestre Estelar",
+    classeTipo: "ClasseExp2",
+    transclasse: false,
+    classeAspdBase: 156,
+    classePenEscudo: -6,
+    classeArmas: [
+      {
+        idArma: "Arma_Livro",
+        penalidade: -5
+      }
+    ],
+    classeArmas2: [],
+    classeBuilds: []
+  },
+  {
+    classeID: "Classe_CE",
+    classeNome: "Ceifador de Almas",
+    classeTipo: "ClasseExp2",
+    transclasse: false,
+    classeAspdBase: 156,
+    classePenEscudo: -6,
+    classeArmas: [
+      {
+        idArma: "Arma_Adaga",
+        penalidade: -10
+      },
+      {
+        idArma: "Arma_Cajado1",
+        penalidade: -10
+      },
+      {
+        idArma: "Arma_Cajado2",
+        penalidade: -10
+      }
+    ],
+    classeArmas2: [],
+    classeBuilds: []
+  },
+  {
     classeID: "Classe_DO",
     classeNome: "Invocador",
     classeTipo: "Doram",
@@ -584,18 +655,18 @@ var classes = [
 
 var buildsClasses = [];
 buildsClasses["Classe_SC"] = [
-  { "id": "Arco_Critico", "nome": "Crítico com arco" },
-  { "id": "Disparo_Triplo", "nome": "Disparo Triplo" },
-  { "id": "Rajada_de_Flechas", "nome": "Rajada de Flechas" },
-  { "id": "Impacto_de_Tyr", "nome": "Impacto de Tyr" },
-  { "id": "Apunhalar", "nome": "Apunhalar" }
+  { id: "Arco_Critico", nome: "Crítico com arco" },
+  { id: "Disparo_Triplo", nome: "Disparo Triplo" },
+  { id: "Rajada_de_Flechas", nome: "Rajada de Flechas" },
+  { id: "Impacto_de_Tyr", nome: "Impacto de Tyr" },
+  { id: "Apunhalar", nome: "Apunhalar" }
 ];
 buildsClasses["Classe_GX"] = [
-  { "id": "Impacto_Meteoro", "nome": "Impacto Meteoro" },
-  { "id": "Laminas_de_Loki", "nome": "Lâminas de Loki" },
-  { "id": "Lamento_de_Loki", "nome": "Lamento de Loki" },
-  { "id": "Katar_Critico", "nome": "Crítico com katar" },
-  { "id": "Dual_Critico", "nome": "Crítico com duas armas" }
+  { id: "Impacto_Meteoro", nome: "Impacto Meteoro" },
+  { id: "Laminas_de_Loki", nome: "Lâminas de Loki" },
+  { id: "Lamento_de_Loki", nome: "Lamento de Loki" },
+  { id: "Katar_Critico", nome: "Crítico com katar" },
+  { id: "Dual_Critico", nome: "Crítico com duas armas" }
 ];
 
 var buildRequisitos = [];

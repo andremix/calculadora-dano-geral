@@ -106,6 +106,7 @@ Ignora DEFM                   REQ_IgnDefm
 Conjuração Variável           REQ_CVar
 Conjuração Fixa               REQ_CFix
 Pós-conjuração                REQ_Pos
+Efetividade de cura           REQ_Cura
 Esquiva Perfeita              REQ_EP
 HP                            REQ_HP
 SP                            REQ_SP

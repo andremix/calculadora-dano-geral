@@ -16,8 +16,25 @@ body {
   padding: 2rem 0;
 }
 
-.alternating-rows .row:nth-child(even) {
+.row.itemBonus {
+  display: block;
+  padding: 0;
+  margin-top: .5rem;
+}
+.row.itemBonus [class^="col"] {
+  padding: .5rem 1.25rem;
+}
+
+.alternating-rows .row:nth-child(even),
+.itemBonus div:nth-child(odd) {
   background: #eff1f7a3;
+}
+.row.itemBonus div {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .cool-box {
@@ -31,6 +48,12 @@ body {
   background: #436be3;
   padding: 1.25rem 1.25rem;
   color: white;
+  display: flex;
+  justify-content: space-between;
+}
+.cool-box--header img {
+  -webkit-filter: drop-shadow(1px 1px 0 #102871) drop-shadow(-1px -1px 0 #6c8ae6);
+  filter: drop-shadow(1px 1px 0 #102871) drop-shadow(-1px -1px 0 #6c8ae6);
 }
 .cool-box--content {
   padding: 1.25rem 1.25rem;

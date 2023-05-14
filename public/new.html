@@ -149,7 +149,7 @@
                 Munição:
               </div>
               <div class="col-7">
-                <select id="propriedadeAtaque" autocomplete="off" disabled>
+                <select id="municao" autocomplete="off" disabled>
                   <option value="0">Neutro</option>
                   <option value="1">Agua</option>
                   <option value="2">Terra</option>
@@ -166,7 +166,7 @@
           </div>
         </div>
 
-        <div class="cool-box">
+        <div id="alvo" class="cool-box">
           <div class="cool-box--header font-heavy">
             Alvo do ataque
           </div>
@@ -176,7 +176,7 @@
                 Monstro:
               </div>
               <div class="col-7">
-                <select id="carregarMonstro" autocomplete="off">
+                <select id="idMonstro" autocomplete="off">
                   <option value="">Personalizado</option>
                   <option value="1059">Abelha-Rainha</option>
                   <option value="1647">Algoz Eremes</option>
@@ -237,6 +237,7 @@
                   <option value="2240">Menestrel Alphoccio</option>
                   <option value="2238">Mestre Chen Liu</option>
                   <option value="1648">Mestre-ferreiro Howard</option>
+                  <option value="1917">Morroc Ferido</option>
                   <option value="1956">Naght Sieger</option>
                   <option value="3000">Necromante de Morroc</option>
                   <option value="1087">Orc Herói</option>
@@ -326,12 +327,26 @@
                   <option value="1">Anjo</option>
                   <option value="2">Bruto</option>
                   <option value="3">Demônio</option>
+                  <option value="11">Doram</option>
                   <option value="4">Dragão</option>
+                  <option value="10">Humano</option>
                   <option value="5">Humanoide</option>
                   <option value="6">Inseto</option>
                   <option value="7">Morto-Vivo</option>
                   <option value="8">Peixe</option>
                   <option value="9">Planta</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-5">
+                Tamanho:
+              </div>
+              <div class="col-7">
+                <select id="tamanhoMonstro">
+                  <option value="0">Pequeno</option>
+                  <option value="1">Médio</option>
+                  <option value="2">Grande</option>
                 </select>
               </div>
             </div>
@@ -353,18 +368,6 @@
             </div>
             <div class="row">
               <div class="col-5">
-                Tamanho:
-              </div>
-              <div class="col-7">
-                <select id="tamanho">
-                  <option value="0">Pequeno</option>
-                  <option value="1">Médio</option>
-                  <option value="2">Grande</option>
-                </select>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-5">
                 Chefe:
               </div>
               <div class="col-7">
@@ -381,7 +384,7 @@
     <div class="row">
       <div class="col-8 no-padding">
         <div class="row pt-0">
-          <div id="itemTopo" class="col-6">
+          <div id="itemTopo" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Cabeça [topo]
@@ -418,37 +421,29 @@
                   </select>
                 </div>
               </div>
-              <div class="row carta">
-                <div class="col-12">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
-              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
-          <div id="itemMeio" class="col-6">
+          <div id="itemMeio" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Cabeça [meio]
               </div>
               <div class="row">
-                <div class="col-7">
+                <div class="col-12">
                   <select autocomplete="off" class="equipamento">
                     <option value="">Nenhum</option>
                   </select>
                 </div>
-                <div class="col-5">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
               </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
         </div>
         <div class="row pt-0">
-          <div id="itemBaixo" class="col-6">
+          <div id="itemBaixo" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Cabeça [baixo]
@@ -460,9 +455,11 @@
                   </select>
                 </div>
               </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
-          <div id="itemArmadura" class="col-6">
+          <div id="itemArmadura" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Armadura
@@ -499,18 +496,13 @@
                   </select>
                 </div>
               </div>
-              <div class="row carta">
-                <div class="col-12">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
-              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
         </div>
         <div class="row pt-0">
-          <div id="itemMaoDireita" class="col-6">
+          <div id="itemMaoDireita" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Mão direita
@@ -547,16 +539,11 @@
                   </select>
                 </div>
               </div>
-              <div class="row carta">
-                <div class="col-12">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
-              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
-          <div id="itemMaoEsquerda" class="col-6">
+          <div id="itemMaoEsquerda" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Mão esquerda
@@ -593,18 +580,13 @@
                   </select>
                 </div>
               </div>
-              <div class="row carta">
-                <div class="col-12">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
-              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
         </div>
         <div class="row pt-0">
-          <div id="itemCapa" class="col-6">
+          <div id="itemCapa" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Capa
@@ -641,16 +623,11 @@
                   </select>
                 </div>
               </div>
-              <div class="row carta">
-                <div class="col-12">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
-              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
-          <div id="itemSapatos" class="col-6">
+          <div id="itemSapatos" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Calçados
@@ -687,53 +664,42 @@
                   </select>
                 </div>
               </div>
-              <div class="row carta">
-                <div class="col-12">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
-              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
         </div>
         <div class="row pt-0">
-          <div id="itemAcessorioD" class="col-6">
+          <div id="itemAcessorioD" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Acessório [direita]
               </div>
               <div class="row">
-                <div class="col-7">
+                <div class="col-12">
                   <select autocomplete="off" class="equipamento">
                     <option value="">Nenhum</option>
                   </select>
                 </div>
-                <div class="col-5">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
               </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
-          <div id="itemAcessorioE" class="col-6">
+          <div id="itemAcessorioE" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
                 Acessório [esquerda]
               </div>
               <div class="row">
-                <div class="col-7">
+                <div class="col-12">
                   <select autocomplete="off" class="equipamento">
                     <option value="">Nenhum</option>
                   </select>
                 </div>
-                <div class="col-5">
-                  <select autocomplete="off">
-                    <option value="">Nenhum</option>
-                  </select>
-                </div>
               </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
             </div>
           </div>
         </div>
@@ -772,7 +738,11 @@
     }, 300000);
   </script>
 
+  <script type="text/javascript" src="assets/js/itemBonuses.js"></script>
   <script type="text/javascript" src="assets/js/itens.js"></script>
+  <script type="text/javascript" src="assets/js/cartas.js"></script>
+  <script type="text/javascript" src="assets/js/municoes.js"></script>
+  <script type="text/javascript" src="assets/js/tiposArmas.js"></script>
   <script type="text/javascript" src="assets/js/classes.js"></script>
   <script type="text/javascript" src="assets/js/script.js"></script>
 </body>
