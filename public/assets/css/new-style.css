@@ -25,9 +25,19 @@ body {
   padding: .5rem 1.25rem;
 }
 
+.sticky {
+  position: sticky;
+  top: 20px;
+}
+
 .alternating-rows .row:nth-child(even),
-.itemBonus div:nth-child(odd) {
+.itemBonus div:nth-child(odd),
+#resultados [class^="col"]:nth-child(even) {
   background: #eff1f7a3;
+}
+#resultados [class^="col"] {
+  display: flex;
+  justify-content: space-between;
 }
 .row.itemBonus div {
   padding-top: 0.3rem;
@@ -62,8 +72,26 @@ body {
   padding-bottom: 10px;
 }
 
-select, input[type=text] {
+.atributo {
+  display: flex;
+}
+.atributo input[type=text]:disabled {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.atributo input[type=text]:nth-child(2) {
+  width: 40px;
+  padding-left: 3px;
+}
+.atributo input[type=text]:nth-child(3) {
+  width: 28px;
+  text-align: right;
+}
+
+select, input[type=text], input[type=number] {
   width: 100%;
+  height: 26px;
 }
 input.input-invisivel {
   border-color: transparent;
@@ -87,4 +115,51 @@ select option:disabled {
   position: absolute;
   bottom: 0;
   left: -50px;
+}
+
+#buffs {
+  padding: 1.25rem;
+  padding-right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+#buffs .classeBuff {
+  border: 1px dashed #b1b1b1;
+  border-radius: 6px;
+  padding: 10px;
+  width: 23%;
+  width: calc(25% - 1.25rem);
+}
+#buffs .classeBuff p {
+  margin: 0 0 10px;
+}
+#buffs .classeBuff .buff {
+  width: 100%;
+}
+#buffs .classeBuff .buff input[type=checkbox] {
+  display: none;
+}
+#buffs .classeBuff .buff label {
+  width: 100%;
+  background: #f7f7f7;
+  margin-bottom: 5px;
+  display: flex;
+  height: 35px;
+  padding: 3px;
+  align-items: center;
+  gap: 10px;
+  /* border: 1px solid #e8e8e8; */
+  border-radius: 5px;
+  font-size: 12px;
+  user-select: none;
+}
+#buffs .classeBuff .buff label:hover {
+  background: #eeeeee;
+  cursor: pointer;
+  /* border-color: #dbdbdb; */
+}
+#buffs .classeBuff .buff input:checked ~ label {
+  background: #d7f5da;
+  border-color: #adeab3;
 }

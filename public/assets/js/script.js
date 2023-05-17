@@ -30,6 +30,8 @@ let todosItensSelecionados = {
   "itemAcessorioD": {},
   "itemAcessorioE": {}
 };
+let bonusConsolidados = {};
+let menorconjuracaofixaP = 0;
 
 
 function getItemRefino(slot) {
@@ -66,6 +68,15 @@ function hasCombo(slotOriginal, itemOriginal, opcoesItens) {
   return (temTodosItens && slotOriginal == primeiroElementoItemOriginal);
 }
 
+function isEquipped(itemId) {
+  return $(".itemSlot select option[value=" + itemId + "]:selected").length > 0;
+}
+
+function hasBuff(buffID) {
+  let inputs = $("#buffs").find("input[id="+buffID+"]").is(":checked");
+  return inputs;
+}
+
 function isOpponent(tipo, ids) {
   let quantidadeAlvos = $(`#${tipo}`).filter(function(item, index) { return ids.includes($(this).val()) }).length;
   return quantidadeAlvos > 0;
@@ -89,7 +100,9 @@ function setClasse(varClasseAtual) {
 
 function setBuildAtual() {
   let tempBuildAtual = $("#buildPersonagem").val().replace(classeAtual.classeID + "--", "");
+  console.log("tempBuildAtual: ", tempBuildAtual);
   buildAtual = classeAtual.classeBuilds.find(obj => { return obj.id === tempBuildAtual });
+  console.log("buildAtual: ", buildAtual);
 }
 
 function getClasseTipo() {
@@ -199,7 +212,7 @@ function filterItemByBuild(slot) {
       return (
         obj.itemTipo === slot
         &&
-        (obj.itemClasses.includes(classePersonagem) || obj.itemClasses.includes("todas") || (classeAtual.transclasse && obj.itemClasses.includes("transclasse")))
+        (obj.itemClasses.filter(e => e.indexOf(classePersonagem) >= 0) || obj.itemClasses.includes("todas") || (classeAtual.transclasse && obj.itemClasses.includes("transclasse")))
         &&
         obj.itemBonus.some(r=> buildAtual.requisitos.includes(r))
       )
@@ -284,6 +297,10 @@ function calcularPontosAtributo() {
     for(var ii = 0; ii < pontosDistribuidos; ii++) {
       pontosAtributoTotais -= pontosGastosPorAtributo[ii];
     }
+    let id = $(this).attr("id");
+    id = id.charAt(0).toUpperCase() + id.substring(1);
+    $("#custo" + id).val("(" + pontosGastosPorAtributo[pontosDistribuidos] + ")");
+
   });
   if(getClasseTipo() == "ClasseT1" || getClasseTipo() == "Classe2" || getClasseTipo() == "ClasseT3") { pontosAtributoTotais += 52; }
   $("#disponiveis").val(pontosAtributoTotais);
@@ -506,6 +523,9 @@ function definirBonusItens() {
       let bonusItem = item.itemFuncao(slot, itemId);
       $.each(bonusItem, function(index, value) {
         todosItensSelecionados[slot][index] = (todosItensSelecionados[slot][index] ? todosItensSelecionados[slot][index] : 0) + value;
+        if(index == "conjuracaofixap" && value < menorconjuracaofixaP) {
+          menorconjuracaofixaP = value;
+        }
       });
 
     }
@@ -522,6 +542,9 @@ function definirBonusItens() {
       let bonusCarta = carta.itemFuncao(slot, cartaId);
       $.each(bonusCarta, function(index, value) {
         todosItensSelecionados[slot][index] = (todosItensSelecionados[slot][index] ? todosItensSelecionados[slot][index] : 0) + value;
+        if(index == "conjuracaofixap" && value < menorconjuracaofixaP) {
+          menorconjuracaofixaP = value;
+        }
       });
     }
   });
@@ -533,9 +556,13 @@ function definirBonusItens() {
     if(Object.keys(valueTodosItens).length > 0) {
       $.each(valueTodosItens, function(indexBonus, valueBonus) {
         if(valueBonus) {
+          let bonusRuim = "";
+          if(((["posconjuracao","conjuracaovariavel","conjuracaofixap","conjuracaofixas"].includes(indexBonus) || indexBonus.indexOf("recargade--") >= 0) && (valueBonus > 0)) || (!(["posconjuracao","conjuracaovariavel","conjuracaofixap","conjuracaofixas"].includes(indexBonus) || indexBonus.indexOf("recargade--") >= 0) & (valueBonus < 0))) {
+            bonusRuim = `style="color:#ea2465"`;
+          }
           if(!(indexBonus.indexOf("--") >= 0 && indexBonus.replace(indexBonus.substr(0,indexBonus.indexOf("--")) + "--","") != buildAtual.id)) {
             elemento.append(
-              `<div class="col-12"><span>${getItemBonusName(indexBonus)}:</span><span>${valueBonus}${isItemBonusPercentage(indexBonus) ? "%" : ""}</span></div>`
+              `<div class="col-12"><span>${getItemBonusName(indexBonus)}:</span><span ${bonusRuim}>${valueBonus > 0 ? "+" : ""}${valueBonus}${isItemBonusPercentage(indexBonus) ? "%" : ""}</span></div>`
             )
           }
         }
@@ -545,22 +572,94 @@ function definirBonusItens() {
 
 }
 
-function getFormulaSkill(prop, base, classe) {
+function getSkillFormula(prop, base, classe) {
   let formula = buildAtual.formula(prop, base, classe);
-  console.log("Formula: " + formula + "%");
   return formula
+}
+
+function getBonusPercentage(bonus = 0) {
+  return ROUNDDOWN(bonus / 100, 5);
+}
+
+function resetResultado() {
+  $("#resultados").html("");
+}
+
+function adicionarResultado(nome, valor) {
+  valor = Math.max(valor, 0);
+  $("#resultados").append(`<div class="row"><div class="col-12"><span>${nome}: </span><span>${valor.toLocaleString()}</span></div></div>`)
+}
+
+function ROUNDUP(numero, decimais) {
+  return (Math.ceil(numero * Math.pow(10, decimais)) / Math.pow(10, decimais));
+}
+
+function ROUNDDOWN(numero, decimais) {
+  return (Math.floor(numero * Math.pow(10, decimais)) / Math.pow(10, decimais));
+}
+
+function calcularAspd() {
+  let itemArmaAtual;
+  let itemEscudoAtual;
+  let Shield_Penalty = 0;
+
+  Job_Base_ASPD = classeAtual.classeAspdBase;
+  Job_ASPD = Job_Base_ASPD;
+  if($("#itemMaoDireita select.equipamento").val() != "") {
+    itemArmaAtual = filterItemById($("#itemMaoDireita select.equipamento").val());
+    Job_Weapon_Penalty = (classeAtual.classeArmas.find(obj => { return obj.idArma === itemArmaAtual.itemSubtipo })).penalidade;
+    Job_ASPD = Job_Base_ASPD + Job_Weapon_Penalty;
+  }
+  if($("#itemMaoEsquerda select.equipamento").val() != "") {
+    itemEscudoAtual = filterItemById($("#itemMaoEsquerda select.equipamento").val());
+    if(itemEscudoAtual.itemTipo == "itemEscudo") {
+      Shield_Penalty = classeAtual.classePenEscudo;
+    }
+  }
+
+  Equips_P = (bonusConsolidados.aspdp || 0);
+  Equips_F = (bonusConsolidados.aspdf || 0);
+  Total_AGI = (bonusConsolidados.atributoagilidade || 0);
+  Total_DEX = (bonusConsolidados.atributodestreza || 0);
+
+  ASPD_Correction = (Total_AGI < 205) ? ROUNDUP((Math.sqrt(205) - Math.sqrt(Total_AGI)) / 7.15, 3) : 0;
+  Aspd_Penalty = (Job_Base_ASPD > 145) ? (1 - (Job_ASPD - 144) / 50) : 0.96;
+  // Pendente: Adicionar consumíveis de ASPD
+  Speed_Potion = 0;
+  // Pendente: Adicionar skills de ASPD
+  Skill_P = 0;
+  if(hasBuff("359") && (buildAtual.ataque.tipoAtaque == "basico" || buildAtual.ataque.tipoAtaque == "basicocritico")) { Skill_P += 30; } // Frenesi
+  Base_Aspd = (parseInt((200 - (200 - (Job_ASPD + Shield_Penalty - ASPD_Correction + Math.sqrt((Total_AGI * 9.9987) + (Total_DEX * 0.1922)) * Aspd_Penalty)) * (1 - (Speed_Potion / 100) - (Skill_P / 100))) * 1000) / 1000);
+  ASPD_Equipment_P = (parseInt(((195 - Base_Aspd) * (Equips_P / 100)) * 100) / 100);
+  Final_ASPD = Math.min(Base_Aspd + ASPD_Equipment_P + Equips_F, 193);
+
+  return Final_ASPD;
 }
 
 function calcular() {
   console.log("### Calculando ###");
-  let bonusConsolidados = {};
+  bonusConsolidados = {};
   $.each(todosItensSelecionados, function(indexTodosItens, valueTodosItens) {
     $.each(valueTodosItens, function(index, valor) {
       bonusConsolidados[index] = parseInt((bonusConsolidados[index] ? bonusConsolidados[index] : 0) + valor);
     });
   });
 
-  let formulaSkill = getFormulaSkill(bonusConsolidados, getNivelBase(), getNivelClasse());
+  let nivelClasse = getNivelClasse();
+
+  bonusConsolidados.atributoforca = (bonusConsolidados.atributoforca ? bonusConsolidados.atributoforca : 0) + classeAtual.bonusClasse.for[nivelClasse];
+  bonusConsolidados.atributoagilidade = (bonusConsolidados.atributoagilidade ? bonusConsolidados.atributoagilidade : 0) + classeAtual.bonusClasse.agi[nivelClasse];
+  bonusConsolidados.atributovitalidade = (bonusConsolidados.atributovitalidade ? bonusConsolidados.atributovitalidade : 0) + classeAtual.bonusClasse.vit[nivelClasse];
+  bonusConsolidados.atributointeligencia = (bonusConsolidados.atributointeligencia ? bonusConsolidados.atributointeligencia : 0) + classeAtual.bonusClasse.int[nivelClasse];
+  bonusConsolidados.atributodestreza = (bonusConsolidados.atributodestreza ? bonusConsolidados.atributodestreza : 0) + classeAtual.bonusClasse.des[nivelClasse];
+  bonusConsolidados.atributosorte = (bonusConsolidados.atributosorte ? bonusConsolidados.atributosorte : 0) + classeAtual.bonusClasse.sor[nivelClasse];
+
+  $("input#bonusFor").val((bonusConsolidados.atributoforca >= 0 ? "+" : "") + bonusConsolidados.atributoforca);
+  $("input#bonusAgi").val((bonusConsolidados.atributoagilidade >= 0 ? "+" : "") + bonusConsolidados.atributoagilidade);
+  $("input#bonusVit").val((bonusConsolidados.atributovitalidade >= 0 ? "+" : "") + bonusConsolidados.atributovitalidade);
+  $("input#bonusInt").val((bonusConsolidados.atributointeligencia >= 0 ? "+" : "") + bonusConsolidados.atributointeligencia);
+  $("input#bonusDes").val((bonusConsolidados.atributodestreza >= 0 ? "+" : "") + bonusConsolidados.atributodestreza);
+  $("input#bonusSor").val((bonusConsolidados.atributosorte >= 0 ? "+" : "") + bonusConsolidados.atributosorte);
 
   bonusConsolidados.atributoforca = (bonusConsolidados.atributoforca ? bonusConsolidados.atributoforca : 0) + getAtributoBase("for");
   bonusConsolidados.atributoagilidade = (bonusConsolidados.atributoagilidade ? bonusConsolidados.atributoagilidade : 0) + getAtributoBase("agi");
@@ -569,8 +668,29 @@ function calcular() {
   bonusConsolidados.atributodestreza = (bonusConsolidados.atributodestreza ? bonusConsolidados.atributodestreza : 0) + getAtributoBase("des");
   bonusConsolidados.atributosorte = (bonusConsolidados.atributosorte ? bonusConsolidados.atributosorte : 0) + getAtributoBase("sor");
 
+  bonusConsolidados.danofisicop = (bonusConsolidados.danofisicop ? parseInt(bonusConsolidados.danofisicop) : 0) + (isOpponentChefe() ? (bonusConsolidados.danofisicochefe || 0) : 0);
+
+  let skillFormula = getSkillFormula(bonusConsolidados, getNivelBase(), getNivelClasse());
+  console.log("Formula: ", skillFormula);
   let itemArmaAtual = filterItemById($("#itemMaoDireita select.equipamento").val());
+
+  let nivelMonstro = parseInt($("#nivelMonstro").val()) || 1;
+  let defesaFisicaInicialMonstro = parseInt($("#hardDEF").val()) || 0;
+  let defesaMagicaInicialMonstro = parseInt($("#hardDEFM").val()) || 0;
+  let monstroFor = parseInt($("#monstroFor").val()) || 1;
+  let monstroAgi = parseInt($("#monstroAgi").val()) || 1;
+  let monstroVit = parseInt($("#monstroVit").val()) || 1;
+  let monstroInt = parseInt($("#monstroInt").val()) || 1;
+  let monstroDes = parseInt($("#monstroDes").val()) || 1;
+  let monstroSor = parseInt($("#monstroSor").val()) || 1;
+  let monstroEsquiva = parseInt($("#monstroEsquiva").val()) || 1;
+
   let refinoArmaAtual = getItemRefino("itemMaoDireita");
+
+  let propriedadeAtaque = parseInt($("#municao").val());
+  if($("#propriedadeConversor").val() != "") { propriedadeAtaque = parseInt($("#propriedadeConversor").val()); }
+  let vantagemElemento = getVantagemElemental(propriedadeAtaque);
+
   let statusAtq = 0;
   let statBonus = 0;
   let overRefino = 0;
@@ -581,6 +701,14 @@ function calcular() {
   let itemArmaNivel =  0;
   let variance = 0;
   let danoTamanho = 1;
+  let weaponAtqMin = 0;
+  let weaponAtqMax = 0;
+  let extraAtq = 0;
+  let atqGroupAMin = 0;
+  let atqGroupAMax = 0;
+  let atqGroupB = 0;
+
+  statusAtq = ((getNivelBase() / 4) + bonusConsolidados.atributoforca + (bonusConsolidados.atributodestreza / 5) + (bonusConsolidados.atributosorte / 3));
 
   if(itemArmaAtual != undefined) {
     let tipoArma = tiposArmas.find(obj => { return obj.armaId === itemArmaAtual.itemSubtipo });
@@ -588,27 +716,146 @@ function calcular() {
     itemArmaATQ = itemArmaAtual.itemArmaATQ;
     itemArmaNivel = itemArmaAtual.itemArmaNivel;
 
-    variance = parseInt(0.05 * itemArmaNivel * itemArmaATQ);
-    bonusRefino = refinoArmaAtual * ataquePorRefino[itemArmaNivel];
+    variance = (0.05 * itemArmaNivel * itemArmaATQ);
+    bonusRefino = (refinoArmaAtual * ataquePorRefino[itemArmaNivel]);
     overRefino = Math.max(refinoArmaAtual - (8 - itemArmaNivel), 0) * overPorRefino[itemArmaNivel];
     highRefino = (Math.max(refinoArmaAtual - 16, 0) * (parseInt(itemArmaNivel / 2) + 1)) + (16 * (parseInt(itemArmaNivel / 2) + 1) * Math.max(Math.min(refinoArmaAtual - 15, 1), 0));
 
     danoTamanho = tipoArma.armaPenalidades[$("#tamanhoMonstro").val()];
 
+    console.log("danoTamanho: ", danoTamanho)
+
     if($("#itemMaoDireita select.equipamento").val() != "" && isTipoArma("itemMaoDireita", ["Arma_Arco","Arma_Instrumento","Arma_Chicote","Arma_Pistola","Arma_Rifle","Arma_Metralhadora","Arma_Espingarda","Arma_Granadas"])) {
-      statusAtq = parseInt(getNivelBase() / 4) + bonusConsolidados.atributodestreza + parseInt(bonusConsolidados.atributoforca / 5) + parseInt(bonusConsolidados.atributosorte / 3);
-      statBonus = parseInt((itemArmaATQ * bonusConsolidados.atributodestreza) / 200);
+      statusAtq = ((getNivelBase() / 4) + bonusConsolidados.atributodestreza + (bonusConsolidados.atributoforca / 5) + (bonusConsolidados.atributosorte / 3));
+      statBonus = ((itemArmaATQ * bonusConsolidados.atributodestreza) / 200);
     } else {
-      statusAtq = parseInt(getNivelBase() / 4) + bonusConsolidados.atributoforca + parseInt(bonusConsolidados.atributodestreza / 5) + parseInt(bonusConsolidados.atributosorte / 3);
-      statBonus = parseInt((itemArmaATQ * bonusConsolidados.atributoforca) / 200);
+      statBonus = ((itemArmaATQ * bonusConsolidados.atributoforca) / 200);
     }
 
-    weaponAtqMin = parseInt((itemArmaATQ - variance + statBonus + bonusRefino + highRefino) * danoTamanho);
+    let hasNoVariance = ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? 1 : -1);
+    let hasOver = ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? 1 : 0);
+    weaponAtqMin = parseInt((itemArmaATQ + (variance * hasNoVariance) + statBonus + bonusRefino + highRefino + (overRefino * hasOver)) * danoTamanho);
     weaponAtqMax = parseInt((itemArmaATQ + variance + statBonus + bonusRefino + highRefino + overRefino) * danoTamanho);
 
-    extraAtq = (bonusConsolidados.atq || 0) + (bonusConsolidados.atqmunicao || 0);
-    console.log("extraAtq: " + extraAtq);
+    console.log("itemArmaATQ: ", itemArmaATQ);
+    console.log("variance: ", variance);
+    console.log("bonusRefino: ", bonusRefino);
+    console.log("overRefino: ", overRefino);
+    console.log("highRefino: ", highRefino);
+    console.log("statBonus: ", statBonus);
+    console.log("weaponAtqMin: ", weaponAtqMin);
+    console.log("weaponAtqMax: ", weaponAtqMax);
+
+    // Pendente: MasteryATK e BuffATK
+
   }
+
+  // Pendente: Consumíveis e Pseudo Buff (Encanto de Órion, Investigar, etc)
+  extraAtq = (bonusConsolidados.atq || 0) + (bonusConsolidados.atqmunicao || 0);
+  console.log("extraAtq: ", extraAtq);
+  console.log("statusAtq: ", statusAtq);
+
+  // Calculo de defesa pesada do monstro
+  let defesaFisicaFinalMonstro = defesaFisicaInicialMonstro * (1 - (getBonusPercentage(Math.min(bonusConsolidados.ignoredef || 0, 100))));
+  if(isEquipped("4399")) { extraAtq += parseInt(defesaFisicaFinalMonstro / 2); defesaFisicaFinalMonstro = 0; } // Carta Thanatos
+  if(hasBuff("2315a") && !hasBuff("2315b")) { extraAtq += 150; } // Aegis Domini 150 DEF
+  if(hasBuff("2315b")) {  extraAtq += 170; } // Aegis Domini 170 DEF
+  let reducaoDefesaFisicaPesadaMonstro = ((4000 + defesaFisicaFinalMonstro) / (4000 + defesaFisicaFinalMonstro * 10));
+
+  if(hasBuff("286") && propriedadeAtaque == "1") { vantagemElemento += 0.2; } // Dilúvio
+  if(hasBuff("285") && propriedadeAtaque == "3") { vantagemElemento += 0.2; } // Vulcão
+  if(hasBuff("287") && propriedadeAtaque == "4") { vantagemElemento += 0.2; } // Furacão
+  atqGroupAMin = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((weaponAtqMin + extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho)) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca)))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
+  atqGroupAMax = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((weaponAtqMax + extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
+
+  // atqGroupB = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
+
+  statusAtq = statusAtq * getVantagemElemental("0");
+
+  atqTotalMin = (statusAtq * 2) + atqGroupAMin;
+  atqTotalMax = (statusAtq * 2) + atqGroupAMax;
+
+  // Se for skill, pega a fórmula da habilidade e considera os bônus de dano da habilidade
+  let skillModifier = (buildAtual.ataque.tipoAtaque == "skill" || buildAtual.ataque.tipoAtaque == "skillcritico") ? (getBonusPercentage(skillFormula)) : 1;
+  let skillBonus = (buildAtual.ataque.tipoAtaque == "skill" || buildAtual.ataque.tipoAtaque == "skillcritico") ? (1 + getBonusPercentage(bonusConsolidados["danode--" + buildAtual.id])) : 1;
+
+  // Curta = dano corpo a corpo | Longa = dano a distância
+  if(hasBuff("5002")) { bonusConsolidados.danodistancia = (bonusConsolidados.danodistancia ? bonusConsolidados.danodistancia : 0) + 250; } // Ilimitar
+  let distanceModifier = ((buildAtual.ataque.distancia == "curta") ? (1 + getBonusPercentage(bonusConsolidados.danomelee)) : (1 + getBonusPercentage(bonusConsolidados.danodistancia)));
+
+  // Pentente: Frenesi, Olhos de Águia, Força Violenta, Força Violentíssima, Furor, Dedicação
+  let damageModifier = skillFormula;
+  if(hasBuff("113") && !hasBuff("486")) { damageModifier += 25; } // Força Violentíssima
+  if(hasBuff("486")) { damageModifier += 100; } // Força Violentíssima
+  if(hasBuff("359") && (buildAtual.ataque.tipoAtaque == "basico" || buildAtual.ataque.tipoAtaque == "basicocritico")) { damageModifier += 200; } // Frenesi
+  damageModifier = damageModifier / skillFormula;
+
+  // Calculo defesa leve do monstro
+  let reducaoDefesaFisicaLeveMonstro = parseInt((nivelMonstro + monstroVit) / 2);
+  console.log("reducaoDefesaFisicaLeveMonstro: ", reducaoDefesaFisicaLeveMonstro)
+
+  // Se for crítico, adiciona +40% de dano
+  let modificadorCritBase = ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? 1.4 : 1);
+  let modificadorCritBonus = 1 + ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? (getBonusPercentage(bonusConsolidados.danocritico)) : 0);
+
+  // Pendente: Garra Sombria
+  let multiplicadorFinal = 1;
+  if(hasBuff("214")) { multiplicadorFinal += (isOpponentChefe() ? 0.1 : 0.2); } // Ataque Surpresa
+  if(hasBuff("78")) { multiplicadorFinal += 1; } // Lex Aeterna
+
+  let finalMin = (parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(atqTotalMin * reducaoDefesaFisicaPesadaMonstro) * skillModifier) - reducaoDefesaFisicaLeveMonstro) * skillBonus) * distanceModifier) * damageModifier) * modificadorCritBonus) * modificadorCritBase) * multiplicadorFinal) * buildAtual.ataque.golpes);
+  let finalMax = (parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(atqTotalMax * reducaoDefesaFisicaPesadaMonstro) * skillModifier) - reducaoDefesaFisicaLeveMonstro) * skillBonus) * distanceModifier) * damageModifier) * modificadorCritBonus) * modificadorCritBase) * multiplicadorFinal) * buildAtual.ataque.golpes);
+
+  resetResultado();
+  adicionarResultado("Dano mínimo",finalMin);
+  adicionarResultado("Dano máximo",finalMax);
+
+  if(buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") {
+    let taxacritica = 1 + (bonusConsolidados.crit || 0) + parseInt(bonusConsolidados.atributosorte / 3);
+    if(buildAtual.ataque.distancia == "longa") taxacritica += (bonusConsolidados.critd || 0);
+    adicionarResultado("Taxa crítica",taxacritica);
+  }
+
+  let aspd = calcularAspd();
+  adicionarResultado("Velocidade de ataque", ROUNDUP(aspd, 2));
+  let golpesPorSegundo = 50 / (200 - aspd);
+  let intervaloEntreAtaques = 1 / golpesPorSegundo;
+  console.log("Ataque: ", buildAtual.ataque);
+  if(buildAtual.ataque.conjuracaovariavel > 0 || buildAtual.ataque.conjuracaofixa > 0 || buildAtual.ataque.posconjuracao > 0 || buildAtual.ataque.recarga > 0) {
+    let conjuracaovariavel = (buildAtual.ataque.conjuracaovariavel || 0) * Math.max(1 + getBonusPercentage(bonusConsolidados.conjuracaovariavel), 0) * Math.max(1 - (((bonusConsolidados.atributodestreza || 0) * 2 + (bonusConsolidados.atributointeligencia || 0)) / 530), 0);
+    let conjuracaofixa = (Math.max((buildAtual.ataque.conjuracaofixa || 0) + (bonusConsolidados.conjuracaofixas || 0), 0) * (1 + (menorconjuracaofixaP / 100)));
+    let posconjuracao = (buildAtual.ataque.posconjuracao || 0) * (1 + (Math.max((bonusConsolidados.posconjuracao || 0), -100) / 100));
+    let recarga = Math.max((buildAtual.ataque.recarga || 0) + (bonusConsolidados["recargade--" + buildAtual.id] || 0), 0);
+
+    let tempoConjuracao = conjuracaovariavel + conjuracaofixa;
+    let tempoEspera = Math.max(posconjuracao, recarga);
+
+    intervaloEntreAtaques = Math.max(tempoConjuracao + tempoEspera, intervaloEntreAtaques);
+    golpesPorSegundo = 1 / intervaloEntreAtaques;
+
+    if(buildAtual.ataque.conjuracaovariavel > 0) {
+      adicionarResultado("Conjuração variável", parseInt(conjuracaovariavel * 100) / 100);
+    }
+    if(buildAtual.ataque.conjuracaofixa > 0) {
+      adicionarResultado("Conjuração fixa", parseInt(conjuracaofixa * 100) / 100);
+    }
+    if(buildAtual.ataque.posconjuracao > 0) {
+      adicionarResultado("Pós-conjuração", parseInt(posconjuracao * 100) / 100);
+    }
+    if(buildAtual.ataque.recarga > 0) {
+      adicionarResultado("Recarga", parseInt(recarga * 100) / 100);
+    }
+  }
+
+  let modificadorDPS = 1;
+  if(hasBuff("48") && (buildAtual.ataque.tipoAtaque == "basico" || buildAtual.ataque.tipoAtaque == "basicocritico")) { modificadorDPS *= 1.5; } // Ataque Duplo
+
+  let danoPorSegundo = (((finalMin + finalMax) / 2) * golpesPorSegundo) * modificadorDPS;
+  if(!hasBuff("78")) {
+    adicionarResultado("Ataques por segundo", Math.round(golpesPorSegundo * 100) / 100);
+    adicionarResultado("Dano por segundo", parseInt(Math.max(danoPorSegundo, 0)));
+  }
+
 
   console.log("---------------------------");
 }
@@ -638,6 +885,24 @@ function exibirMunicoes() {
   }
 }
 
+function listarBuffs() {
+  let htmlcode = ``;
+  buffs.forEach(function(classe, classeIndex) {
+    let quantidade = (classe.habilidades.filter(function(buff, buffIndex) { return buff.disponivel })).length;
+    if(quantidade > 0) {
+      htmlcode += `<div class="classeBuff"><p>${classe.nomeClasse}</p><div class="buffs">`;
+      classe.habilidades.forEach(function(buff, buffIndex) {
+        if(buff.disponivel) {
+          htmlcode += `<div class="buff"><input type="checkbox" id="${buff.skillID}"> <label for="${buff.skillID}"><img src="https://static.divine-pride.net/images/skill/${parseInt(buff.skillID)}.png"> <span>${buff.skillName}</span></label></div>`
+        }
+      });
+      htmlcode += `</div></div>`;
+    }
+  });
+  $("#buffs").append(htmlcode);
+  $("#buffs input[type=checkbox]").on("change", onChangeInputs);
+}
+
 function zerarTodosItensSelecionados() {
   todosItensSelecionados = {
     "itemTopo": {},
@@ -651,12 +916,14 @@ function zerarTodosItensSelecionados() {
     "itemAcessorioD": {},
     "itemAcessorioE": {}
   }
+  menorconjuracaofixaP = 0;
   $(".itemSlot .itemBonus").html("");
 }
 
 function initCalc() {
   // inicia calculadora
   // readClassAndBuild();
+  listarBuffs();
   getClasses();
   exibirBuilds();
   setClasse(classePersonagem);
@@ -665,6 +932,7 @@ function initCalc() {
   listarNivelClasse();
   listarAtributosMaximos();
   exibirItens();
+  calcular();
 }
 
 function onChangeInputs() {
@@ -685,21 +953,21 @@ $(document).ready(function() {
   $("#classePersonagem").on("change", function() {
     readClassAndBuild();
     setClasse(classePersonagem);
-    zerarTodosItensSelecionados();
-    setBuildAtual();
     listarNivelBase();
     listarNivelClasse();
-    exibirBuilds();
     listarAtributosMaximos();
+    exibirBuilds();
     $("#buildPersonagem").trigger("change");
   });
 
   $("#buildPersonagem").on("change", function() {
     readClassAndBuild();
+    setClasse(classePersonagem);
     setBuildAtual();
     zerarTodosItensSelecionados();
     exibirItens();
     exibirMunicoes();
+    onChangeInputs();
   });
 
   $("#adotado").on("change", function() {
@@ -722,7 +990,7 @@ $(document).ready(function() {
     calcularPontosAtributo();
   });
 
-  $("select.refino, select.equipamento, .carta select, .atributoBase, #alvo :input, #municoes select, select#nivelPersonagem, select#nivelClasse").on("change", onChangeInputs);
+  $("select.refino, select.equipamento, .carta select, .atributoBase, #alvo :input, #municoes select, select#nivelPersonagem, select#nivelClasse, select#propriedadeConversor").on("change", onChangeInputs);
 });
 
 

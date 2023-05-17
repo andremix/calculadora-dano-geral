@@ -343,4 +343,84 @@ let itemBonuses = {
     "nome": "Dano de Castigo de Loki",
     "porcentagem": true
   },
+  "danode--Petalas_Flamejantes": {
+    "nome": "Dano de Pétalas Flamejantes",
+    "porcentagem": true
+  },
+  "danode--Lanca_Congelante": {
+    "nome": "Dano de Lança Congelante",
+    "porcentagem": true
+  },
+  "danode--Lamina_de_Vento": {
+    "nome": "Dano de Lâmina de Vento",
+    "porcentagem": true
+  },
+  "danode--Chamas_de_Hela": {
+    "nome": "Dano de Chamas de Hela",
+    "porcentagem": true
+  },
+  "danode--Cometa": {
+    "nome": "Dano de Cometa",
+    "porcentagem": true
+  },
+  "danode--Meteoros_de_Nepeta": {
+    "nome": "Dano de Meteoros de Nepeta",
+    "porcentagem": true
+  },
+  "recargade--Meteoros_de_Nepeta": {
+    "nome": "Recarga de Meteoros de Nepeta",
+    "porcentagem": true
+  },
+  "danode--Espa": {
+    "nome": "Dano de Espa",
+    "porcentagem": true
+  },
+  "danode--Eswhoo": {
+    "nome": "Dano de Eswhoo",
+    "porcentagem": true
+  },
+  "danode--Canhao_de_Protons": {
+    "nome": "Dano de Canhão de Prótons",
+    "porcentagem": true
+  },
+  "danode--Laminas_de_Loki": {
+    "nome": "Dano de Lâminas de Loki",
+    "porcentagem": true
+  },
+  "danode--Explosao_Solar": {
+    "nome": "Dano de Explosão Solar",
+    "porcentagem": true
+  },
+  "danode--Luz_da_Criacao": {
+    "nome": "Dano de Luz da Criação",
+    "porcentagem": true
+  },
+  "danode--Onda_Psiquica": {
+    "nome": "Dano de Onda Psíquica",
+    "porcentagem": true
+  },
+  "danode--Judex": {
+    "nome": "Dano de Judex",
+    "porcentagem": true
+  },
+  "recargade--Explosao_Espiritual": {
+    "nome": "Recarga de Explosão Espiritual",
+    "porcentagem": true
+  },
+  "danode--Execucao": {
+    "nome": "Dano de Execução",
+    "porcentagem": true
+  },
+  "danode--Bomba_Acida": {
+    "nome": "Dano de Bomba Ácida",
+    "porcentagem": true
+  },
+  "danode--Disparo_Triplo": {
+    "nome": "Dano de Disparo Triplo",
+    "porcentagem": true
+  },
+  "danode--Apunhalar": {
+    "nome": "Dano de Apunhalar",
+    "porcentagem": true
+  },
 }

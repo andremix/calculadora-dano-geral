@@ -91,6 +91,30 @@ var cartas = [
     }
   },
   {
+    cartaID:     "4145",
+    cartaNome:   "Carta Belzebu",
+    cartaSlot:   "itemAcessorio",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_CVar"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "conjuracaovariavel": -30
+      }
+    }
+  },
+  {
+    cartaID:     "4486",
+    cartaNome:   "Carta Belzebu Selada",
+    cartaSlot:   "itemAcessorio",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_CVar"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "conjuracaovariavel": -15
+      }
+    }
+  },
+  {
     cartaID:     "4636",
     cartaNome:   "Carta Bijou",
     cartaSlot:   "itemEscudo",
@@ -304,6 +328,19 @@ var cartas = [
     }
   },
   {
+    cartaID:     "4352",
+    cartaNome:   "Carta Espadachim Egnigem",
+    cartaSlot:   "itemSapatos",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_DFisico","REQ_HP","REQ_SP"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "hpp": 10,
+        "spp": 10
+      }
+    }
+  },
+  {
     cartaID:     "4094",
     cartaNome:   "Carta Esqueleto Arqueiro",
     cartaSlot:   "itemArma",
@@ -403,6 +440,30 @@ var cartas = [
     }
   },
   {
+    cartaID:     "4480",
+    cartaNome:   "Carta Kiel Selada",
+    cartaSlot:   "itemCabeca",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_Pos"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "posconjuracao": (-15) + (getItemRefino(slot) >= 15 ? (-15) : 0)
+      }
+    }
+  },
+  {
+    cartaID:     "4403",
+    cartaNome:   "Carta Kiel-D-01",
+    cartaSlot:   "itemCabeca",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_Pos"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "posconjuracao": -30
+      }
+    }
+  },
+  {
     cartaID:     "4419",
     cartaNome:   "Carta Ktullanux",
     cartaSlot:   "itemArmadura",
@@ -478,7 +539,7 @@ var cartas = [
   {
     cartaID:     "4593",
     cartaNome:   "Carta Menblatt",
-    cartaSlot:   "itemArma",
+    cartaSlot:   "itemCapa",
     cartaClasses: ["todas"],
     itemBonus: ["REQ_DDist"],
     itemFuncao: function(slot, itemId) {
@@ -634,7 +695,7 @@ var cartas = [
     }
   },
   {
-    cartaID:     "4508",
+    cartaID:     "4505",
     cartaNome:   "Carta Scaraba",
     cartaSlot:   "itemAcessorio",
     cartaClasses: ["todas"],
@@ -709,18 +770,6 @@ var cartas = [
     }
   },
   {
-    cartaID:     "4407",
-    cartaNome:   "Carta Valquíria Randgris",
-    cartaSlot:   "itemArma",
-    cartaClasses: ["todas"],
-    itemBonus: ["REQ_DFisico"],
-    itemFuncao: function(slot, itemId) {
-      return {
-        "danofisicop": 10
-      }
-    }
-  },
-  {
     cartaID:     "4317",
     cartaNome:   "Carta Yakuza",
     cartaSlot:   "itemArma",
@@ -754,6 +803,46 @@ var cartas = [
     itemFuncao: function(slot, itemId) {
       return {
         "danofisicop": 1
+      }
+    }
+  },
+  {
+    cartaID:     "4407",
+    cartaNome:   "Carta Valquíria Randgris",
+    cartaSlot:   "itemArma",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_DFisico"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "danofisicop": 10
+      }
+    }
+  },
+  {
+    cartaID:     "27163",
+    cartaNome:   "Carta Verme com Rosto",
+    cartaSlot:   "itemAcessorio",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_Aspd","REQ_Pos"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "atributoagilidade": (-1) + (hasCombo(slot, itemId, [["27165"]]) ? 2 : 0),
+        "atributodestreza": (-1) + (hasCombo(slot, itemId, [["27165"]]) ? 2 : 0),
+        "aspdp": 3
+      }
+    }
+  },
+  {
+    cartaID:     "27165",
+    cartaNome:   "Carta Verme Sombrio com Rosto",
+    cartaSlot:   "itemAcessorio",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_Aspd","REQ_Pos"],
+    itemFuncao: function(slot, itemId) {
+      return {
+        "atributovitalidade": (-1) + (hasCombo(slot, itemId, [["27163"]]) ? 2 : 0),
+        "atributointeligencia": (-1) + (hasCombo(slot, itemId, [["27163"]]) ? 2 : 0),
+        "posconjuracao": (-3) + (hasCombo(slot, itemId, [["27163"]]) ? (-3) : 0)
       }
     }
   },

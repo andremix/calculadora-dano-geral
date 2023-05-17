@@ -4,6 +4,14 @@ var classes = [
     classeNome: "Renegado",
     classeTipo: "ClasseT3",
     transclasse: true,
+    bonusClasse: {
+      for: [0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,4,4,4,4,4,4,4,4,4,4,4,4,5,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,8],
+      agi: [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,4,5],
+      vit: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,6,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8],
+      int: [0,0,0,0,0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6],
+      des: [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,4,4,4],
+      sor: [0,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6]
+    },
     classeAspdBase: 156,
     classePenEscudo: -5,
     classeArmas: [
@@ -28,10 +36,21 @@ var classes = [
       {
         id: "Arco_Critico",
         nome: "Crítico com arco",
-        maoDireita: ["Arma_Arco"],
+        maoDireita: ["Arma_Arco","Arma_Espada1"],
         maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "longa",
+          tipoAtaque: "basicocritico",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 1
+        },
         formula: function(prop, nivelBase, nivelClasse) {
-          return 140
+          return 100
         },
         requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef"]
       },
@@ -39,13 +58,42 @@ var classes = [
         id: "Disparo_Triplo",
         nome: "Disparo Triplo",
         maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "longa",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0.5,
+          conjuracaofixa: 0,
+          posconjuracao: 0.5,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return ((300 + (prop.atributoagilidade * 5)) * (nivelBase / 120))
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_Disparo_Triplo","REQ_IgnDef","REQ_Pos","REQ_Precisao","REQ_CVar","REQ_AGI"]
       },
       {
         id: "Rajada_de_Flechas",
         nome: "Rajada de Flechas",
         maoDireita: ["Arma_Arco"],
         maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "longa",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0.1,
+          recarga: 0,
+          golpes: 2
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 190
+        },
         requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_DCrit","REQ_IgnDef","REQ_Rajada_de_Flechas"]
       },
       {
