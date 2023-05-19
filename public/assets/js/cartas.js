@@ -154,6 +154,17 @@ var cartas = [
     }
   },
   {
+    cartaID:     "4609",
+    cartaNome:   "Carta Cavaleira Khalitzburg",
+    cartaSlot:   "itemEscudo",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_DFisico"],
+    itemFuncao: function(slot, itemId) {
+      return {
+      }
+    }
+  },
+  {
     cartaID:     "4608",
     cartaNome:   "Carta Cavaleiro Branco",
     cartaSlot:   "itemArma",
@@ -285,6 +296,7 @@ var cartas = [
     cartaClasses: ["todas"],
     itemBonus: ["REQ_DFisico"],
     itemFuncao: function(slot, itemId) {
+      temDrake = true;
       return {
 
       }
@@ -531,6 +543,7 @@ var cartas = [
     cartaClasses: ["todas"],
     itemBonus: ["REQ_IgnDef"],
     itemFuncao: function(slot, itemId) {
+      temInvestigar = true;
       return {
         "esquiva": -30
       }
@@ -766,6 +779,18 @@ var cartas = [
       return {
         "crit": 9 + (getNivelBase() >= 100 ? 1 : 0),
         "danocritico": (getNivelBase() >= 100 ? 5 : 0)
+      }
+    }
+  },
+  {
+    cartaID:     "4117",
+    cartaNome:   "Carta Sorrateiro",
+    cartaSlot:   "itemArma",
+    cartaClasses: ["todas"],
+    itemBonus: ["REQ_ATQDuplo"],
+    itemFuncao: function(slot, itemId) {
+      itemHabilitaAtaqueDuplo = true;
+      return {
       }
     }
   },

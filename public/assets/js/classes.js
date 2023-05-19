@@ -35,8 +35,8 @@ var classes = [
     classeBuilds: [
       {
         id: "Arco_Critico",
-        nome: "Crítico com arco",
-        maoDireita: ["Arma_Arco","Arma_Espada1"],
+        nome: "Crítico com Arco",
+        maoDireita: ["Arma_Arco"],
         maoEsquerda: [],
         ataque: {
           tipoDano: "fisico",
@@ -52,7 +52,28 @@ var classes = [
         formula: function(prop, nivelBase, nivelClasse) {
           return 100
         },
-        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef"]
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef","REQ_ATQDuplo"]
+      },
+      {
+        id: "Melee_Critico",
+        nome: "Crítico com Adaga/Espada",
+        maoDireita: ["Arma_Espada1","Arma_Adaga"],
+        maoEsquerda: ["itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "basicocritico",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 100
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_TCrit","REQ_DCrit","REQ_IgnDef","REQ_ATQDuplo"]
       },
       {
         id: "Disparo_Triplo",
@@ -94,19 +115,70 @@ var classes = [
         formula: function(prop, nivelBase, nivelClasse) {
           return 190
         },
-        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_DCrit","REQ_IgnDef","REQ_Rajada_de_Flechas"]
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_IgnDef","REQ_Rajada_de_Flechas","REQ_Precisao"]
       },
       {
         id: "Impacto_de_Tyr",
         nome: "Impacto de Tyr",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoDireita: ["Arma_Espada1","Arma_Adaga"],
+        maoEsquerda: ["itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0.35,
+          conjuracaofixa: 0.35,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 2
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 500
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_IgnDef","REQ_Impacto_de_Tyr","REQ_CVar","REQ_CFix","REQ_Precisao"]
       },
       {
         id: "Apunhalar",
         nome: "Apunhalar",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoDireita: ["Arma_Espada1","Arma_Adaga"],
+        maoEsquerda: ["itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0.5,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 700
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_IgnDef","REQ_Apunhalar","REQ_Pos"]
+      },
+      {
+        id: "Soco_Furacao",
+        nome: "Soco Furacão",
+        maoDireita: ["Arma_Espada1","Arma_Adaga"],
+        maoEsquerda: ["itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0.5,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return parseInt((400 + prop.atributoagilidade) * (nivelBase / 100))
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_IgnDef","REQ_Soco_Furacao","REQ_Pos"]
       }
     ]
   },
@@ -115,6 +187,14 @@ var classes = [
     classeNome: "Renegado",
     classeTipo: "Classe3",
     transclasse: false,
+    bonusClasse: {
+      for: [0,0,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,4,4,4,4,4,4,4,4,4,4,4,4,5,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,8],
+      agi: [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,4,5],
+      vit: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,6,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,8,8],
+      int: [0,0,0,0,0,0,0,0,0,0,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6],
+      des: [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,4,4,4],
+      sor: [0,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6]
+    },
     classeAspdBase: 156,
     classePenEscudo: -5,
     classeArmas: [
@@ -141,31 +221,105 @@ var classes = [
         nome: "Crítico com arco",
         maoDireita: ["Arma_Arco"],
         maoEsquerda: [],
-        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef"]
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "longa",
+          tipoAtaque: "basicocritico",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 100
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_TCrit","REQ_TCritD","REQ_DCrit","REQ_IgnDef","REQ_ATQDuplo"]
       },
       {
         id: "Disparo_Triplo",
         nome: "Disparo Triplo",
         maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "longa",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0.5,
+          conjuracaofixa: 0,
+          posconjuracao: 0.5,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return ((300 + (prop.atributoagilidade * 5)) * (nivelBase / 120))
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_Disparo_Triplo","REQ_IgnDef","REQ_Pos","REQ_Precisao","REQ_CVar","REQ_AGI"]
       },
       {
         id: "Rajada_de_Flechas",
         nome: "Rajada de Flechas",
         maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "longa",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0.1,
+          recarga: 0,
+          golpes: 2
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 190
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DDist","REQ_IgnDef","REQ_Rajada_de_Flechas","REQ_Precisao"]
       },
       {
         id: "Impacto_de_Tyr",
         nome: "Impacto de Tyr",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoDireita: ["Arma_Espada1","Arma_Adaga"],
+        maoEsquerda: ["itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0.35,
+          conjuracaofixa: 0.35,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 2
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 500
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_IgnDef","REQ_Impacto_de_Tyr","REQ_CVar","REQ_CFix","REQ_Precisao"]
       },
       {
         id: "Apunhalar",
         nome: "Apunhalar",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoDireita: ["Arma_Espada1","Arma_Adaga"],
+        maoEsquerda: ["itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0.5,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 700
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_IgnDef","REQ_Apunhalar","REQ_Pos"]
       }
     ]
   },
@@ -174,6 +328,14 @@ var classes = [
     classeNome: "Sicário",
     classeTipo: "ClasseT3",
     transclasse: true,
+    bonusClasse: {
+      for: [0,0,0,0,1,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,8,8,8],
+      agi: [0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,6,7,7,7,7,7,7,7,7,7,8,8,8,8,8,8,8,9],
+      vit: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6],
+      int: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5],
+      des: [0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,4,5,5,5,5,6,5,5,5,5,5,6,6,6,7,7,7,7,7,7,7,7,7,7,7],
+      sor: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2]
+    },
     classeAspdBase: 156,
     classePenEscudo: -9,
     classeArmas: [
@@ -210,34 +372,88 @@ var classes = [
     ],
     classeBuilds: [
       {
+        id: "Dual_Critico",
+        nome: "Crítico com duas armas",
+        maoDireita: ["Arma_Espada1","Arma_Adaga","Arma_Machado1"],
+        maoEsquerda: ["Arma_Espada1","Arma_Adaga","Arma_Machado1","itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "basicocritico",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 100
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_TCrit","REQ_DCrit","REQ_IgnDef","REQ_ATQDuplo"]
+      },
+      {
+        id: "Katar_Critico",
+        nome: "Crítico com Katar",
+        maoDireita: ["Arma_Katar"],
+        maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "basicocritico",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 100
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_TCrit","REQ_DCrit","REQ_IgnDef","REQ_ATQDuplo"]
+      },
+      {
         id: "Impacto_Meteoro",
         nome: "Impacto Meteoro",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoDireita: ["Arma_Espada1","Arma_Adaga","Arma_Machado1","Arma_Katar"],
+        maoEsquerda: ["Arma_Espada1","Arma_Adaga","Arma_Machado1","itemEscudo"],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0.25,
+          conjuracaofixa: 0.25,
+          posconjuracao: 0.5,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return 440
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_IgnDef","REQ_Impacto_Meteoro","REQ_Pos","REQ_Precisao"]
       },
       {
         id: "Laminas_de_Loki",
         nome: "Lâminas de Loki",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
-      },
-      {
-        id: "Lamento_de_Loki",
-        nome: "Lamento de Loki",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
-      },
-      {
-        id: "Katar_Critico",
-        nome: "Crítico com katar",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
-      },
-      {
-        id: "Dual_Critico",
-        nome: "Crítico com duas armas",
-        maoDireita: ["Arma_Arco"],
-        maoEsquerda: []
+        maoDireita: ["Arma_Katar"],
+        maoEsquerda: [],
+        ataque: {
+          tipoDano: "fisico",
+          distancia: "curta",
+          tipoAtaque: "skill",
+          propriedade: false,
+          conjuracaovariavel: 0,
+          conjuracaofixa: 0,
+          posconjuracao: 0.2,
+          recarga: 0,
+          golpes: 1
+        },
+        formula: function(prop, nivelBase, nivelClasse) {
+          return parseInt(300 * (nivelBase / 100))
+        },
+        requisitos: ["REQ_Aspd","REQ_DFisico","REQ_DCorp","REQ_Laminas_de_Loki","REQ_IgnDef"]
       }
     ]
   },

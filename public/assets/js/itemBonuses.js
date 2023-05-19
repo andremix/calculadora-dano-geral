@@ -423,4 +423,16 @@ let itemBonuses = {
     "nome": "Dano de Apunhalar",
     "porcentagem": true
   },
+  "danode--Impacto_Meteoro": {
+    "nome": "Dano de Impacto Meteoro",
+    "porcentagem": true
+  },
+  "variavelde--Impacto_Meteoro": {
+    "nome": "Conjuração variável de Impacto Meteoro",
+    "porcentagem": true
+  },
+  "danode--Soco_Furacao": {
+    "nome": "Dano de Soco Furacão",
+    "porcentagem": true
+  },
 }

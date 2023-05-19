@@ -28,10 +28,19 @@ let todosItensSelecionados = {
   "itemCapa": {},
   "itemSapatos": {},
   "itemAcessorioD": {},
-  "itemAcessorioE": {}
+  "itemAcessorioE": {},
+  "itemMalhaSombria": {},
+  "itemLuvaSombria": {},
+  "itemEscudoSombrio": {},
+  "itemGrevaSombria": {},
+  "itemBrincoSombrio": {},
+  "itemColarSombrio": {}
 };
 let bonusConsolidados = {};
 let menorconjuracaofixaP = 0;
+let temInvestigar = false;
+let temDrake = false;
+let itemHabilitaAtaqueDuplo = false;
 
 
 function getItemRefino(slot) {
@@ -212,10 +221,10 @@ function filterItemByBuild(slot) {
       return (
         obj.itemTipo === slot
         &&
-        (obj.itemClasses.filter(e => e.indexOf(classePersonagem) >= 0) || obj.itemClasses.includes("todas") || (classeAtual.transclasse && obj.itemClasses.includes("transclasse")))
+        ((obj.itemClasses.filter(e => e.indexOf(classePersonagem) >= 0)).length > 0 || obj.itemClasses.includes("todas") || (classeAtual.transclasse && obj.itemClasses.includes("transclasse")))
         &&
         obj.itemBonus.some(r=> buildAtual.requisitos.includes(r))
-      )
+      );
     });
   } else {
     return [];
@@ -344,14 +353,16 @@ function exibirCartas(posicao) {
   $("#" + posicao + " div.carta select").val("");
   $("#" + posicao + " div.carta").slice(1).remove();
   $("#" + posicao + " div.carta").html("");
-  if(posicao == "itemTopo" || posicao == "itemMeio") slotCarta = "itemCabeca";
-  if(posicao == "itemMaoDireita") slotCarta = "itemArma";
-  if(posicao == "itemAcessorioD" || posicao == "itemAcessorioE") slotCarta = "itemAcessorio";
   let slots = 0;
   if(posicao != "") {
     let itemSelecionado = $("#" + posicao + " select.equipamento").val();
     if(itemSelecionado) {
       let item = filterItemById(itemSelecionado);
+      if(posicao == "itemTopo" || posicao == "itemMeio") slotCarta = "itemCabeca";
+      if(posicao == "itemMaoDireita") slotCarta = "itemArma";
+      if(posicao == "itemMaoEsquerda" && item.itemTipo == "itemArma") slotCarta = "itemArma";
+      if(posicao == "itemMaoEsquerda" && item.itemTipo == "itemEscudo") slotCarta = "itemEscudo";
+      if(posicao == "itemAcessorioD" || posicao == "itemAcessorioE") slotCarta = "itemAcessorio";
       let slots = item.slots;
       let encantamentosItem = (item.encantamentos) ? item.encantamentos : [];
       let qtdEncantamentos = (encantamentosItem.length > 0) ? encantamentosItem.length : 0;
@@ -468,7 +479,7 @@ function exibirItens() {
     $("#itemMaoDireita select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
   });
 
-  // Carrega item MÃO DIREITA
+  // Carrega item MÃO ESQUERDA
   $("#itemMaoEsquerda select.equipamento").html("<option value=''>Nenhum</option>");
   if(buildAtual.maoEsquerda.length >= 1) {
     $("#itemMaoEsquerda select").prop("disabled", false);
@@ -481,6 +492,48 @@ function exibirItens() {
     $("#itemMaoEsquerda select").val("");
     $("#itemMaoEsquerda select").prop("disabled", true);
   }
+
+  // Carrega item MALHA SOMBRIA
+  var itensTopo = filterItemByBuild("itemMalhaSombria");
+  $("#itemMalhaSombria select.equipamento").html("<option value=''>Nenhum</option>");
+  itensTopo.forEach(function(item, index) {
+    $("#itemMalhaSombria select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
+  });
+
+  // Carrega item LUVAS SOMBRIAS
+  var itensTopo = filterItemByBuild("itemLuvaSombria");
+  $("#itemLuvaSombria select.equipamento").html("<option value=''>Nenhum</option>");
+  itensTopo.forEach(function(item, index) {
+    $("#itemLuvaSombria select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
+  });
+
+  // Carrega item ESCUDO SOMBRIO
+  var itensTopo = filterItemByBuild("itemEscudoSombrio");
+  $("#itemEscudoSombrio select.equipamento").html("<option value=''>Nenhum</option>");
+  itensTopo.forEach(function(item, index) {
+    $("#itemEscudoSombrio select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
+  });
+
+  // Carrega item GREVAS SOMBRIAS
+  var itensTopo = filterItemByBuild("itemGrevaSombria");
+  $("#itemGrevaSombria select.equipamento").html("<option value=''>Nenhum</option>");
+  itensTopo.forEach(function(item, index) {
+    $("#itemGrevaSombria select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
+  });
+
+  // Carrega item BRINCOS SOMBRIOS
+  var itensTopo = filterItemByBuild("itemBrincoSombrio");
+  $("#itemBrincoSombrio select.equipamento").html("<option value=''>Nenhum</option>");
+  itensTopo.forEach(function(item, index) {
+    $("#itemBrincoSombrio select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
+  });
+
+  // Carrega item COLAR SOMBRIO
+  var itensTopo = filterItemByBuild("itemColarSombrio");
+  $("#itemColarSombrio select.equipamento").html("<option value=''>Nenhum</option>");
+  itensTopo.forEach(function(item, index) {
+    $("#itemColarSombrio select.equipamento").append("<option value='" + item.itemId + "'>" + item.itemNome + "</option>");
+  });
 
 }
 
@@ -507,6 +560,7 @@ function definirBonusItens() {
         let idMunicao = $("#municoes select").val();
         todosItensSelecionados[slot]["atqarma"] = item.itemArmaATQ + (ataquePorRefino[String(item.itemArmaNivel)] * getItemRefino("itemMaoDireita"));
         if(idMunicao) {
+          console.log("entrou na munição?");
           let municaoSelecionada = filterAmmoById(idMunicao);
           let municao = municaoSelecionada.municaoAtaque || 0;
           todosItensSelecionados[slot]["atqmunicao"] = municao;
@@ -515,7 +569,7 @@ function definirBonusItens() {
             todosItensSelecionados[slot][index] = (todosItensSelecionados[slot][index] ? todosItensSelecionados[slot][index] : 0) + value;
           });
         } else {
-          $("select#municao").val("0");
+          $("select#municao").val(String(item.itemPropriedade || "0"));
         }
       }
 
@@ -557,7 +611,7 @@ function definirBonusItens() {
       $.each(valueTodosItens, function(indexBonus, valueBonus) {
         if(valueBonus) {
           let bonusRuim = "";
-          if(((["posconjuracao","conjuracaovariavel","conjuracaofixap","conjuracaofixas"].includes(indexBonus) || indexBonus.indexOf("recargade--") >= 0) && (valueBonus > 0)) || (!(["posconjuracao","conjuracaovariavel","conjuracaofixap","conjuracaofixas"].includes(indexBonus) || indexBonus.indexOf("recargade--") >= 0) & (valueBonus < 0))) {
+          if(((["posconjuracao","conjuracaovariavel","conjuracaofixap","conjuracaofixas"].includes(indexBonus) || indexBonus.indexOf("recargade--") >= 0 || indexBonus.indexOf("variavelde--" || indexBonus.indexOf("fixade--") >= 0) >= 0) && (valueBonus > 0)) || (!(["posconjuracao","conjuracaovariavel","conjuracaofixap","conjuracaofixas"].includes(indexBonus) || indexBonus.indexOf("recargade--") >= 0) & (valueBonus < 0))) {
             bonusRuim = `style="color:#ea2465"`;
           }
           if(!(indexBonus.indexOf("--") >= 0 && indexBonus.replace(indexBonus.substr(0,indexBonus.indexOf("--")) + "--","") != buildAtual.id)) {
@@ -641,7 +695,8 @@ function calcular() {
   bonusConsolidados = {};
   $.each(todosItensSelecionados, function(indexTodosItens, valueTodosItens) {
     $.each(valueTodosItens, function(index, valor) {
-      bonusConsolidados[index] = parseInt((bonusConsolidados[index] ? bonusConsolidados[index] : 0) + valor);
+
+      bonusConsolidados[index] = parseFloat((bonusConsolidados[index] ? bonusConsolidados[index] : 0) + valor);
     });
   });
 
@@ -653,6 +708,11 @@ function calcular() {
   bonusConsolidados.atributointeligencia = (bonusConsolidados.atributointeligencia ? bonusConsolidados.atributointeligencia : 0) + classeAtual.bonusClasse.int[nivelClasse];
   bonusConsolidados.atributodestreza = (bonusConsolidados.atributodestreza ? bonusConsolidados.atributodestreza : 0) + classeAtual.bonusClasse.des[nivelClasse];
   bonusConsolidados.atributosorte = (bonusConsolidados.atributosorte ? bonusConsolidados.atributosorte : 0) + classeAtual.bonusClasse.sor[nivelClasse];
+
+  if(hasBuff("29b") && !hasBuff("29a")) {  bonusConsolidados.atributoagilidade += 7; } // Aumentar Agilidade nv5
+  if(hasBuff("29a")) {  bonusConsolidados.atributoagilidade += 12; } // Aumentar Agilidade nv10
+  if(hasBuff("34b") && !hasBuff("34a")) {  bonusConsolidados.atributodestreza += 5; bonusConsolidados.atributointeligencia += 5; bonusConsolidados.atributoforca += 5; } // Bênção nv5
+  if(hasBuff("34a")) {  bonusConsolidados.atributodestreza += 10; bonusConsolidados.atributointeligencia += 10; bonusConsolidados.atributoforca += 10; } // Bênção nv10
 
   $("input#bonusFor").val((bonusConsolidados.atributoforca >= 0 ? "+" : "") + bonusConsolidados.atributoforca);
   $("input#bonusAgi").val((bonusConsolidados.atributoagilidade >= 0 ? "+" : "") + bonusConsolidados.atributoagilidade);
@@ -708,56 +768,61 @@ function calcular() {
   let atqGroupAMax = 0;
   let atqGroupB = 0;
 
-  statusAtq = ((getNivelBase() / 4) + bonusConsolidados.atributoforca + (bonusConsolidados.atributodestreza / 5) + (bonusConsolidados.atributosorte / 3));
+  statusAtq = parseInt((getNivelBase() / 4) + bonusConsolidados.atributoforca + (bonusConsolidados.atributodestreza / 5) + (bonusConsolidados.atributosorte / 3));
 
+  let hasWeaponEDP = 1;
+  let hasEquipEDP = 1;
   if(itemArmaAtual != undefined) {
     let tipoArma = tiposArmas.find(obj => { return obj.armaId === itemArmaAtual.itemSubtipo });
 
+    hasWeaponEDP = (hasBuff("378")) ? 5 : 1;
+    hasEquipEDP = (hasBuff("378")) ? 4 : 1;
     itemArmaATQ = itemArmaAtual.itemArmaATQ;
     itemArmaNivel = itemArmaAtual.itemArmaNivel;
 
-    variance = (0.05 * itemArmaNivel * itemArmaATQ);
+    variance = parseInt(0.05 * itemArmaNivel * itemArmaATQ) * hasWeaponEDP;
     bonusRefino = (refinoArmaAtual * ataquePorRefino[itemArmaNivel]);
     overRefino = Math.max(refinoArmaAtual - (8 - itemArmaNivel), 0) * overPorRefino[itemArmaNivel];
     highRefino = (Math.max(refinoArmaAtual - 16, 0) * (parseInt(itemArmaNivel / 2) + 1)) + (16 * (parseInt(itemArmaNivel / 2) + 1) * Math.max(Math.min(refinoArmaAtual - 15, 1), 0));
 
     danoTamanho = tipoArma.armaPenalidades[$("#tamanhoMonstro").val()];
+    if(temDrake) danoTamanho = 1;
 
-    console.log("danoTamanho: ", danoTamanho)
+    // console.log("danoTamanho: ", danoTamanho)
 
-    if($("#itemMaoDireita select.equipamento").val() != "" && isTipoArma("itemMaoDireita", ["Arma_Arco","Arma_Instrumento","Arma_Chicote","Arma_Pistola","Arma_Rifle","Arma_Metralhadora","Arma_Espingarda","Arma_Granadas"])) {
-      statusAtq = ((getNivelBase() / 4) + bonusConsolidados.atributodestreza + (bonusConsolidados.atributoforca / 5) + (bonusConsolidados.atributosorte / 3));
-      statBonus = ((itemArmaATQ * bonusConsolidados.atributodestreza) / 200);
+    let isArmaLongaDistancia = isTipoArma("itemMaoDireita", ["Arma_Arco","Arma_Instrumento","Arma_Chicote","Arma_Pistola","Arma_Rifle","Arma_Metralhadora","Arma_Espingarda","Arma_Granadas"]);
+    if($("#itemMaoDireita select.equipamento").val() != "" && isArmaLongaDistancia) {
+      statusAtq = parseInt((getNivelBase() / 4) + bonusConsolidados.atributodestreza + (bonusConsolidados.atributoforca / 5) + (bonusConsolidados.atributosorte / 3));
+      statBonus = parseInt((itemArmaATQ * bonusConsolidados.atributodestreza) / 200);
     } else {
-      statBonus = ((itemArmaATQ * bonusConsolidados.atributoforca) / 200);
+      statBonus = parseInt((itemArmaATQ * bonusConsolidados.atributoforca) / 200);
     }
 
     let hasNoVariance = ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? 1 : -1);
-    let hasOver = ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? 1 : 0);
-    weaponAtqMin = parseInt((itemArmaATQ + (variance * hasNoVariance) + statBonus + bonusRefino + highRefino + (overRefino * hasOver)) * danoTamanho);
-    weaponAtqMax = parseInt((itemArmaATQ + variance + statBonus + bonusRefino + highRefino + overRefino) * danoTamanho);
-
-    console.log("itemArmaATQ: ", itemArmaATQ);
-    console.log("variance: ", variance);
-    console.log("bonusRefino: ", bonusRefino);
-    console.log("overRefino: ", overRefino);
-    console.log("highRefino: ", highRefino);
-    console.log("statBonus: ", statBonus);
-    console.log("weaponAtqMin: ", weaponAtqMin);
-    console.log("weaponAtqMax: ", weaponAtqMax);
+    let hasOver = (!isArmaLongaDistancia ? 1 : 0);
+    weaponAtqMin = (((itemArmaATQ * hasWeaponEDP) + (variance * hasNoVariance) + statBonus + bonusRefino + highRefino) * danoTamanho);
+    weaponAtqMax = (((itemArmaATQ * hasWeaponEDP) + variance + statBonus + bonusRefino + highRefino + (overRefino * hasOver)) * danoTamanho);
+    // console.log("itemArmaATQ: ", itemArmaATQ);
+    // console.log("variance: ", variance);
+    // console.log("bonusRefino: ", bonusRefino);
+    // console.log("overRefino: ", overRefino);
+    // console.log("highRefino: ", highRefino);
+    // console.log("statBonus: ", statBonus);
+    // console.log("weaponAtqMin: ", weaponAtqMin);
+    // console.log("weaponAtqMax: ", weaponAtqMax);
 
     // Pendente: MasteryATK e BuffATK
 
   }
 
   // Pendente: Consumíveis e Pseudo Buff (Encanto de Órion, Investigar, etc)
-  extraAtq = (bonusConsolidados.atq || 0) + (bonusConsolidados.atqmunicao || 0);
-  console.log("extraAtq: ", extraAtq);
-  console.log("statusAtq: ", statusAtq);
+  extraAtq = ((bonusConsolidados.atq || 0) + (bonusConsolidados.atqmunicao || 0)) * hasEquipEDP;
+  // console.log("extraAtq: ", extraAtq);
+  // console.log("statusAtq: ", statusAtq);
 
   // Calculo de defesa pesada do monstro
   let defesaFisicaFinalMonstro = defesaFisicaInicialMonstro * (1 - (getBonusPercentage(Math.min(bonusConsolidados.ignoredef || 0, 100))));
-  if(isEquipped("4399")) { extraAtq += parseInt(defesaFisicaFinalMonstro / 2); defesaFisicaFinalMonstro = 0; } // Carta Thanatos
+  if(temInvestigar) { extraAtq += parseInt(defesaFisicaFinalMonstro / 2); defesaFisicaFinalMonstro = 0; } // Carta Thanatos
   if(hasBuff("2315a") && !hasBuff("2315b")) { extraAtq += 150; } // Aegis Domini 150 DEF
   if(hasBuff("2315b")) {  extraAtq += 170; } // Aegis Domini 170 DEF
   let reducaoDefesaFisicaPesadaMonstro = ((4000 + defesaFisicaFinalMonstro) / (4000 + defesaFisicaFinalMonstro * 10));
@@ -765,15 +830,17 @@ function calcular() {
   if(hasBuff("286") && propriedadeAtaque == "1") { vantagemElemento += 0.2; } // Dilúvio
   if(hasBuff("285") && propriedadeAtaque == "3") { vantagemElemento += 0.2; } // Vulcão
   if(hasBuff("287") && propriedadeAtaque == "4") { vantagemElemento += 0.2; } // Furacão
-  atqGroupAMin = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((weaponAtqMin + extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho)) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca)))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
-  atqGroupAMax = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((weaponAtqMax + extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
+  atqGroupAMin = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((weaponAtqMin) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
+  atqGroupAMax = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((weaponAtqMax) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
+
+  atqGroupB = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
 
   // atqGroupB = parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt((extraAtq) * (1 + getBonusPercentage(bonusConsolidados.danofisicotamanho))) * (1 + getBonusPercentage(bonusConsolidados.atqarmap))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoraca))) * (1 + getBonusPercentage(bonusConsolidados.danofisicopropriedade))) * (1 + getBonusPercentage(bonusConsolidados.danofisicoalvo))) * (1 + getBonusPercentage(bonusConsolidados.danofisicop))) * vantagemElemento);
 
   statusAtq = statusAtq * getVantagemElemental("0");
 
-  atqTotalMin = (statusAtq * 2) + atqGroupAMin;
-  atqTotalMax = (statusAtq * 2) + atqGroupAMax;
+  atqTotalMin = parseInt((statusAtq * 2) + atqGroupAMin + atqGroupB);
+  atqTotalMax = parseInt((statusAtq * 2) + atqGroupAMax + atqGroupB);
 
   // Se for skill, pega a fórmula da habilidade e considera os bônus de dano da habilidade
   let skillModifier = (buildAtual.ataque.tipoAtaque == "skill" || buildAtual.ataque.tipoAtaque == "skillcritico") ? (getBonusPercentage(skillFormula)) : 1;
@@ -791,20 +858,22 @@ function calcular() {
   damageModifier = damageModifier / skillFormula;
 
   // Calculo defesa leve do monstro
-  let reducaoDefesaFisicaLeveMonstro = parseInt((nivelMonstro + monstroVit) / 2);
-  console.log("reducaoDefesaFisicaLeveMonstro: ", reducaoDefesaFisicaLeveMonstro)
+  let reducaoDefesaFisicaLeveMonstro = parseInt((nivelMonstro + monstroVit) / 2) * hasWeaponEDP;
+  // console.log("reducaoDefesaFisicaLeveMonstro: ", reducaoDefesaFisicaLeveMonstro)
 
   // Se for crítico, adiciona +40% de dano
   let modificadorCritBase = ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? 1.4 : 1);
   let modificadorCritBonus = 1 + ((buildAtual.ataque.tipoAtaque == "basicocritico" || buildAtual.ataque.tipoAtaque == "skillcritico") ? (getBonusPercentage(bonusConsolidados.danocritico)) : 0);
 
   // Pendente: Garra Sombria
-  let multiplicadorFinal = 1;
-  if(hasBuff("214")) { multiplicadorFinal += (isOpponentChefe() ? 0.1 : 0.2); } // Ataque Surpresa
-  if(hasBuff("78")) { multiplicadorFinal += 1; } // Lex Aeterna
+  let multiplicadorFinal1 = 1;
+  let multiplicadorFinal2 = 1;
+  if(hasBuff("214")) { multiplicadorFinal1 += (isOpponentChefe() ? 0.1 : 0.2); } // Ataque Surpresa
+  if(hasBuff("78")) { multiplicadorFinal1 += 1; } // Lex Aeterna
+  if(hasBuff("5001") && buildAtual.ataque.distancia == "curta") { multiplicadorFinal2 += 1.5; } // Garra Sombria
 
-  let finalMin = (parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(atqTotalMin * reducaoDefesaFisicaPesadaMonstro) * skillModifier) - reducaoDefesaFisicaLeveMonstro) * skillBonus) * distanceModifier) * damageModifier) * modificadorCritBonus) * modificadorCritBase) * multiplicadorFinal) * buildAtual.ataque.golpes);
-  let finalMax = (parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(atqTotalMax * reducaoDefesaFisicaPesadaMonstro) * skillModifier) - reducaoDefesaFisicaLeveMonstro) * skillBonus) * distanceModifier) * damageModifier) * modificadorCritBonus) * modificadorCritBase) * multiplicadorFinal) * buildAtual.ataque.golpes);
+  let finalMin = (parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(atqTotalMin * reducaoDefesaFisicaPesadaMonstro) * skillModifier) - reducaoDefesaFisicaLeveMonstro) * skillBonus) * distanceModifier) * damageModifier) * modificadorCritBonus) * modificadorCritBase) * multiplicadorFinal1) * multiplicadorFinal2) * buildAtual.ataque.golpes);
+  let finalMax = (parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(parseInt(atqTotalMax * reducaoDefesaFisicaPesadaMonstro) * skillModifier) - reducaoDefesaFisicaLeveMonstro) * skillBonus) * distanceModifier) * damageModifier) * modificadorCritBonus) * modificadorCritBase) * multiplicadorFinal1) * multiplicadorFinal2) * buildAtual.ataque.golpes);
 
   resetResultado();
   adicionarResultado("Dano mínimo",finalMin);
@@ -820,7 +889,7 @@ function calcular() {
   adicionarResultado("Velocidade de ataque", ROUNDUP(aspd, 2));
   let golpesPorSegundo = 50 / (200 - aspd);
   let intervaloEntreAtaques = 1 / golpesPorSegundo;
-  console.log("Ataque: ", buildAtual.ataque);
+
   if(buildAtual.ataque.conjuracaovariavel > 0 || buildAtual.ataque.conjuracaofixa > 0 || buildAtual.ataque.posconjuracao > 0 || buildAtual.ataque.recarga > 0) {
     let conjuracaovariavel = (buildAtual.ataque.conjuracaovariavel || 0) * Math.max(1 + getBonusPercentage(bonusConsolidados.conjuracaovariavel), 0) * Math.max(1 - (((bonusConsolidados.atributodestreza || 0) * 2 + (bonusConsolidados.atributointeligencia || 0)) / 530), 0);
     let conjuracaofixa = (Math.max((buildAtual.ataque.conjuracaofixa || 0) + (bonusConsolidados.conjuracaofixas || 0), 0) * (1 + (menorconjuracaofixaP / 100)));
@@ -848,7 +917,13 @@ function calcular() {
   }
 
   let modificadorDPS = 1;
-  if(hasBuff("48") && (buildAtual.ataque.tipoAtaque == "basico" || buildAtual.ataque.tipoAtaque == "basicocritico")) { modificadorDPS *= 1.5; } // Ataque Duplo
+  if(
+      hasBuff("48")
+      &&
+      (buildAtual.ataque.tipoAtaque == "basico" || buildAtual.ataque.tipoAtaque == "basicocritico")
+      &&
+      (isTipoArma("itemMaoDireita", ["Arma_Adaga"]) || itemHabilitaAtaqueDuplo)
+    ) { modificadorDPS *= 1.5; } // Ataque Duplo
 
   let danoPorSegundo = (((finalMin + finalMax) / 2) * golpesPorSegundo) * modificadorDPS;
   if(!hasBuff("78")) {
@@ -874,7 +949,7 @@ function exibirMunicoes() {
       });
       htmlcode += `</select></div>`;
       row.append(htmlcode);
-      $("#municoes").on("change", onChangeInputs)
+      $("#municoes").on("change", onChangeInputs);
     }
     if(tipoItemMaoDireita != "Arma_Arco") {
       $("#municoes").remove();
@@ -914,9 +989,18 @@ function zerarTodosItensSelecionados() {
     "itemCapa": {},
     "itemSapatos": {},
     "itemAcessorioD": {},
-    "itemAcessorioE": {}
+    "itemAcessorioE": {},
+    "itemMalhaSombria": {},
+    "itemLuvaSombria": {},
+    "itemEscudoSombrio": {},
+    "itemGrevaSombria": {},
+    "itemBrincoSombrio": {},
+    "itemColarSombrio": {}
   }
   menorconjuracaofixaP = 0;
+  temInvestigar = false;
+  temDrake = false;
+  itemHabilitaAtaqueDuplo = false;
   $(".itemSlot .itemBonus").html("");
 }
 
@@ -961,6 +1045,10 @@ $(document).ready(function() {
   });
 
   $("#buildPersonagem").on("change", function() {
+    $(".carta select, select.equipamento, select#municoes").val("");
+    $("select.refino").val("0");
+    $(".carta").html("");
+
     readClassAndBuild();
     setClasse(classePersonagem);
     setBuildAtual();
@@ -991,6 +1079,13 @@ $(document).ready(function() {
   });
 
   $("select.refino, select.equipamento, .carta select, .atributoBase, #alvo :input, #municoes select, select#nivelPersonagem, select#nivelClasse, select#propriedadeConversor").on("change", onChangeInputs);
+
+  $(".cool-box--header").on("click", function() {
+    let header = $(this);
+    $(this).parent().find("> div:last-child").slideToggle(400, "swing", function() {
+      header.toggleClass("active")
+    });
+  });
 });
 
 

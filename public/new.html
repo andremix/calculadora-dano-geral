@@ -23,8 +23,8 @@
           <div class="cool-box--header font-heavy">
             Personagem
           </div>
-          <div class="alternating-rows">
-            <div class="row">
+          <div class="alternating-rows alternating-rows-sd">
+            <div class="row row-wrap">
               <div class="col-2">
                 Nv. de base:
               </div>
@@ -44,7 +44,7 @@
                 </select>
               </div>
             </div>
-            <div class="row">
+            <div class="row row-wrap">
               <div class="col-2">
                 Nv. de classe:
               </div>
@@ -62,7 +62,7 @@
                 </select>
               </div>
             </div>
-            <div class="row">
+            <div class="row row-wrap">
               <div class="col-1">
                 FOR:
               </div>
@@ -88,7 +88,7 @@
                 <input type="text" id="custoVit" autocomplete="off" value="" disabled>
               </div>
             </div>
-            <div class="row">
+            <div class="row row-wrap">
               <div class="col-1">
                 INT:
               </div>
@@ -118,7 +118,7 @@
               <div class="col-3">
                 Pontos disponíveis:
               </div>
-              <div class="col-2">
+              <div class="col-2 force-space-sd">
                 <input type="text" id="disponiveis" class="input-invisivel" value="1" disabled>
               </div>
               <div class="col-4"></div>
@@ -134,13 +134,13 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-8">
+    <div class="row flex-colum-md flex-colum-sd">
+      <div class="col-8 col-12-md col-12-sd">
         <div id="alvo" class="cool-box">
           <div class="cool-box--header font-heavy">
             Alvo do ataque
           </div>
-          <div style="display:flex">
+          <div class="flex flex-colum-sd">
             <div class="alternating-rows" style="flex:1">
               <!-- <div class="row">
                 <div class="col-5">
@@ -416,7 +416,7 @@
           </div>
         </div>
       </div>
-      <div class="col-4">
+      <div class="col-4 col-12-md col-12-sd">
         <div class="cool-box">
 
           <div class="cool-box--header font-heavy">
@@ -475,9 +475,9 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-8 no-padding">
-        <div class="row no-padding">
+    <div class="row flex-colum-md flex-colum-sd">
+      <div class="col-8 col-12-md col-12-sd no-padding">
+        <div class="row no-padding flex-colum-sd">
           <div id="itemTopo" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
@@ -536,7 +536,7 @@
             </div>
           </div>
         </div>
-        <div class="row no-padding">
+        <div class="row no-padding flex-colum-sd">
           <div id="itemBaixo" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
@@ -595,7 +595,7 @@
             </div>
           </div>
         </div>
-        <div class="row no-padding">
+        <div class="row no-padding flex-colum-sd">
           <div id="itemMaoDireita" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
@@ -679,7 +679,7 @@
             </div>
           </div>
         </div>
-        <div class="row no-padding">
+        <div class="row no-padding flex-colum-sd">
           <div id="itemCapa" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
@@ -763,7 +763,7 @@
             </div>
           </div>
         </div>
-        <div class="row no-padding">
+        <div class="row no-padding flex-colum-sd">
           <div id="itemAcessorioD" class="col-6 itemSlot">
             <div class="cool-box">
               <div class="cool-box--header font-heavy">
@@ -797,8 +797,209 @@
             </div>
           </div>
         </div>
+
+        <div class="row no-padding flex-colum-sd">
+          <div class="col-6"></div>
+          <div id="itemMalhaSombria" class="col-6 itemSlot">
+            <div class="cool-box">
+              <div class="cool-box--header font-heavy">
+                Malha Sombria
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <select autocomplete="off" class="refino">
+                    <option value="0">+0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                    <option value="4">+4</option>
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10">+10</option>
+                  </select>
+                </div>
+                <div class="col-8">
+                  <select autocomplete="off" class="equipamento">
+                    <option value="">Nenhum</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row no-padding flex-colum-sd">
+          <div id="itemLuvaSombria" class="col-6 itemSlot">
+            <div class="cool-box">
+              <div class="cool-box--header font-heavy">
+                Luvas Sombrias
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <select autocomplete="off" class="refino">
+                    <option value="0">+0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                    <option value="4">+4</option>
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10">+10</option>
+                  </select>
+                </div>
+                <div class="col-8">
+                  <select autocomplete="off" class="equipamento">
+                    <option value="">Nenhum</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
+            </div>
+          </div>
+          <div id="itemEscudoSombrio" class="col-6 itemSlot">
+            <div class="cool-box">
+              <div class="cool-box--header font-heavy">
+                Escudo Sombrio
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <select autocomplete="off" class="refino">
+                    <option value="0">+0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                    <option value="4">+4</option>
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10">+10</option>
+                  </select>
+                </div>
+                <div class="col-8">
+                  <select autocomplete="off" class="equipamento">
+                    <option value="">Nenhum</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row no-padding flex-colum-sd">
+          <div class="col-6"></div>
+          <div id="itemGrevaSombria" class="col-6 itemSlot">
+            <div class="cool-box">
+              <div class="cool-box--header font-heavy">
+                Grevas Sombrias
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <select autocomplete="off" class="refino">
+                    <option value="0">+0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                    <option value="4">+4</option>
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10">+10</option>
+                  </select>
+                </div>
+                <div class="col-8">
+                  <select autocomplete="off" class="equipamento">
+                    <option value="">Nenhum</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row no-padding flex-colum-sd">
+          <div id="itemBrincoSombrio" class="col-6 itemSlot">
+            <div class="cool-box">
+              <div class="cool-box--header font-heavy">
+                Brincos Sombrios
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <select autocomplete="off" class="refino">
+                    <option value="0">+0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                    <option value="4">+4</option>
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10">+10</option>
+                  </select>
+                </div>
+                <div class="col-8">
+                  <select autocomplete="off" class="equipamento">
+                    <option value="">Nenhum</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
+            </div>
+          </div>
+          <div id="itemColarSombrio" class="col-6 itemSlot">
+            <div class="cool-box">
+              <div class="cool-box--header font-heavy">
+                Colar Sombrio
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <select autocomplete="off" class="refino">
+                    <option value="0">+0</option>
+                    <option value="1">+1</option>
+                    <option value="2">+2</option>
+                    <option value="3">+3</option>
+                    <option value="4">+4</option>
+                    <option value="5">+5</option>
+                    <option value="6">+6</option>
+                    <option value="7">+7</option>
+                    <option value="8">+8</option>
+                    <option value="9">+9</option>
+                    <option value="10">+10</option>
+                  </select>
+                </div>
+                <div class="col-8">
+                  <select autocomplete="off" class="equipamento">
+                    <option value="">Nenhum</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row carta"></div>
+              <div class="row itemBonus"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="col-4">
+      <div class="col-4 col-12-md col-12-sd">
         <div class="cool-box sticky">
           <div class="cool-box--header font-heavy">
             Resultados

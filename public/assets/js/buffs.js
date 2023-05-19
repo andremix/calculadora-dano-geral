@@ -596,13 +596,13 @@ let buffs = [
         skillID: 378,
         skillName: "Encantar com Veneno Mortal",
         niveis: 1,
-        disponivel: false
+        disponivel: true
       },
       {
         skillID: 5001,
         skillName: "Garra Sombria",
         niveis: 1,
-        disponivel: false
+        disponivel: true
       },
       {
         skillID: 2021,
@@ -628,16 +628,28 @@ let buffs = [
         disponivel: false
       },
       {
-        skillID: 34,
-        skillName: "Bênção",
+        skillID: "34a",
+        skillName: "Bênção nv.10",
         niveis: 1,
-        disponivel: false
+        disponivel: true
       },
       {
-        skillID: 29,
-        skillName: "Aumentar Agilidade",
+        skillID: "34b",
+        skillName: "Bênção nv.5",
         niveis: 1,
-        disponivel: false
+        disponivel: true
+      },
+      {
+        skillID: "29a",
+        skillName: "Aumentar Agilidade nv.10",
+        niveis: 1,
+        disponivel: true
+      },
+      {
+        skillID: "29b",
+        skillName: "Aumentar Agilidade nv.5",
+        niveis: 1,
+        disponivel: true
       },
       {
         skillID: 65,
